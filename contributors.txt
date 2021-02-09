@@ -1,6 +1,4 @@
 Gavin Tersteeg
 Eric Schmitt
+Ryan Sand
 
-merge conflict
-
-This is stuff added to make a merge conflict
