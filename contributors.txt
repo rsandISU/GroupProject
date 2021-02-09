@@ -1,2 +1,4 @@
 Gavin Tersteeg
 Eric Schmitt
+
+This is stuff added to make a merge conflict
