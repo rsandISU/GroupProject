@@ -15,7 +15,7 @@ public class ResourceLoader {
 		return toBufferedImage(i);
 	}
 
-	//Waits for an image to load, then transfers to to a buffered image
+	//Waits for an image to load, then transfers it to a buffered image
 	public static BufferedImage toBufferedImage(Image img) {
 		try {
 			MediaTracker mt = new MediaTracker(new JPanel());

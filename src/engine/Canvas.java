@@ -2,10 +2,7 @@ package engine;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.HashMap;
 import java.util.List;
 
@@ -102,8 +99,10 @@ public class Canvas {
     public void addGameElement(String name, GameElement e) {
         gameElements.put(name, e);
 
+        //If the game element is interfaced with any of these types, add them to their respective adapters
         if (e instanceof MouseListener) ema.addMouseListener((MouseListener) e);
         if (e instanceof MouseMotionListener) ema.addMouseMotionListener((MouseMotionListener) e);
+        if (e instanceof KeyListener) eka.addKeyListener((KeyListener) e);
     }
 
     public GameElement getGameElement(String hash) {
