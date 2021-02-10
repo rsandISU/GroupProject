@@ -3,15 +3,17 @@ package test;
 import engine.Canvas;
 import engine.GameElement;
 import engine.Sprite;
+import engine.SpriteClickable;
 import util.ResourceLoader;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
 
 public class EngineTest implements GameElement, MouseMotionListener {
 
-    Sprite spr;
+    SpriteClickable spr;
     Canvas c;
 
     double x = 0;
@@ -22,7 +24,19 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
     public EngineTest(Canvas c) {
         this.c = c;
-        spr = new Sprite(ResourceLoader.getImage("/funni.png"), 0, 0, 200, 400, 0);
+        spr = new SpriteClickable(ResourceLoader.getImage("/funni.png"), ResourceLoader.getImage("/funniActive.png"), 0, 0, 200, 400, 0, null);
+
+        spr.setEvent(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mx = c.getMouseX() - (x + 100);
+                my = c.getMouseY() - (y + 200);
+
+                mx = mx * 0.2;
+                my = my * 0.2;
+
+            }
+        });
     }
 
     @Override
@@ -45,10 +59,20 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
         my = my + 0.5;
 
-        //spr.setX((int) x);
-        //spr.setY((int) y);
+        mx = mx * 0.995;
+        my = my * 0.99;
 
-        if (y > 680) my = -20;
+        spr.setX((int) x);
+        spr.setY((int) y);
+
+        if (y > 680) {
+            my = -Math.abs(my);
+            if (my > -8) my = my * 0.8;
+            if (my > -2) my = 0;
+        }
+
+        if (Math.abs(mx) < 1) mx = 0;
+
         if (x > 1720) mx = -Math.abs(mx);
         if (x < 0) mx = Math.abs(mx);
     }
@@ -60,7 +84,6 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        spr.setX(e.getX());
-        spr.setY(e.getY());
+
     }
 }

@@ -137,6 +137,11 @@ public class GraphicsEngine {
         return objects.get(hash);
     }
 
+    //Returns the object hashmap
+    public HashMap<String, Spritoid> getObjects() {
+        return objects;
+    }
+
     //Remove all objects
     public void clear() {
         objects = new HashMap<String, Spritoid>();

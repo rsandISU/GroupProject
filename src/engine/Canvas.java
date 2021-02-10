@@ -71,12 +71,24 @@ public class Canvas {
                 count++;*/
                 engine.updatePanel();
                 updateGameElements();
+                updateButtons();
             }
         };
 
         Timer t = new Timer(10, action);
         t.setRepeats(true);
         t.start();
+    }
+
+    private void updateButtons() {
+        for (Spritoid spr : getObjects().values()) {
+            if (spr instanceof SpriteClickable) {
+                SpriteClickable button = (SpriteClickable) spr;
+
+                button.setActive(ema.mouseX >= button.getX() && ema.mouseX <= button.getX() + (button.getWidth()) && ema.mouseY >= button.getY() && ema.mouseY <= (button.getY() + button.getHeight()));
+
+            }
+        }
     }
 
     //Engine manipulation functions
@@ -110,7 +122,7 @@ public class Canvas {
     }
 
     //Updates a game element
-    public void updateGameElements() {
+    private void updateGameElements() {
         GameElement e = getGameElement(currentGameElement);
 
         boolean needStart = false;
@@ -148,5 +160,19 @@ public class Canvas {
     public GraphicsEngine getEngine() {
         return engine;
     }
+
+    //Returns the GraphicsEngine objects
+    public HashMap<String, Spritoid> getObjects() {
+        return engine.getObjects();
+    }
+
+    public int getMouseX() {
+        return ema.mouseX;
+    }
+
+    public int getMouseY() {
+        return ema.mouseY;
+    }
+
 
 }

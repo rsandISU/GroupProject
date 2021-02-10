@@ -38,14 +38,14 @@ public class Sprite implements Spritoid{
         this.layer = layer;
     }
 
+    public void setImage(BufferedImage image) {
+        this.image = image;
+    }
+
+
     @Override
     public BufferedImage getImage() {
         return image;
-    }
-
-    @Override
-    public void setImage(BufferedImage image) {
-        this.image = image;
     }
 
     @Override

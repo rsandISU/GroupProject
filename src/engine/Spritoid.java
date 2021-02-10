@@ -3,7 +3,7 @@ package engine;
 import java.awt.image.BufferedImage;
 
 public interface Spritoid {
-    public void setImage(BufferedImage img);
+
     public BufferedImage getImage();
     public void setX(int x);
     public int getX();
