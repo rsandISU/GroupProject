@@ -19,6 +19,11 @@ public class GraphicsEngine {
     private final int areaWidth = 1920;
     private final int areaHeight = 1080;
 
+    //Scale and offset information
+    public double offsetX;
+    public double offsetY;
+    public double areaScalar;
+
     //Sprite Storage
     HashMap<String, Spritoid> objects = new HashMap<String, Spritoid>();
 
@@ -80,6 +85,10 @@ public class GraphicsEngine {
             yOffset *= 0.5;
             scalar = width / (areaWidth * 1.0);
         }
+
+        offsetX = xOffset;
+        offsetY = yOffset;
+        areaScalar = scalar;
 
         //Draw graphicArea image
         panelG.drawImage(area, 0 + (int) xOffset, 0 + (int) yOffset, (int) (areaWidth * scalar), (int) (areaHeight * scalar), null);

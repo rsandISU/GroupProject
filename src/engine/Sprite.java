@@ -93,6 +93,7 @@ public class Sprite implements Spritoid{
         return layer;
     }
 
+    @Override
     public void setHeight(int height) {
         this.height = height;
     }

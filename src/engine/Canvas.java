@@ -4,17 +4,26 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.HashMap;
+import java.util.List;
 
 public class Canvas {
 
+    //Canvas elements
     private JFrame frame;
     private JPanel panel;
     private GraphicsEngine engine;
 
+    //Game element management
     private HashMap<String, GameElement> gameElements = new HashMap<String, GameElement>();
     private String currentGameElement = "";
     private String gameElementToSet = "";
+
+    //IO Management
+    private EngineKeyboardAdapter eka;
+    private EngineMouseAdapter ema;
 
     //This will act as the main canvas onto which graphical elements will be added onto
     public Canvas(String name) {
@@ -26,6 +35,7 @@ public class Canvas {
 
         panel = new JPanel();
         panel.setPreferredSize(new Dimension(960, 540));
+        panel.setFocusable(true);
 
         frame.add(panel);
         frame.pack();
@@ -34,6 +44,13 @@ public class Canvas {
         frame.setVisible(true);
 
         engine = new GraphicsEngine(panel);
+
+        //Add action listeners
+        eka = new EngineKeyboardAdapter();
+        ema = new EngineMouseAdapter(this);
+        panel.addKeyListener(eka);
+        panel.addMouseListener(ema);
+        panel.addMouseMotionListener(ema);
 
         startTimer();
     }
@@ -84,6 +101,9 @@ public class Canvas {
 
     public void addGameElement(String name, GameElement e) {
         gameElements.put(name, e);
+
+        if (e instanceof MouseListener) ema.addMouseListener((MouseListener) e);
+        if (e instanceof MouseMotionListener) ema.addMouseMotionListener((MouseMotionListener) e);
     }
 
     public GameElement getGameElement(String hash) {
@@ -118,6 +138,16 @@ public class Canvas {
     //Sets the current game element
     public void setElement(String name) {
         gameElementToSet = name;
+    }
+
+    //Gets keys down
+    public List<Character> getKeysDown() {
+        return eka.keysDown;
+    }
+
+    //Returns game engine
+    public GraphicsEngine getEngine() {
+        return engine;
     }
 
 }

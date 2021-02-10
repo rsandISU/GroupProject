@@ -5,9 +5,11 @@ import engine.GameElement;
 import engine.Sprite;
 import util.ResourceLoader;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
-public class EngineTest implements GameElement {
+public class EngineTest implements GameElement, MouseMotionListener {
 
     Sprite spr;
     Canvas c;
@@ -37,16 +39,28 @@ public class EngineTest implements GameElement {
 
     @Override
     public void update() {
+
         x = x + mx;
         y = y + my;
 
         my = my + 0.5;
 
-        spr.setX((int) x);
-        spr.setY((int) y);
+        //spr.setX((int) x);
+        //spr.setY((int) y);
 
         if (y > 680) my = -20;
         if (x > 1720) mx = -Math.abs(mx);
         if (x < 0) mx = Math.abs(mx);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        spr.setX(e.getX());
+        spr.setY(e.getY());
     }
 }
