@@ -24,7 +24,7 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
     public EngineTest(Canvas c) {
         this.c = c;
-        spr = new SpriteClickable(ResourceLoader.getImage("/funni.png"), ResourceLoader.getImage("/funniActive.png"), 0, 0, 200, 400, 0, null);
+        spr = new SpriteClickable(ResourceLoader.getImage("funni.png"), ResourceLoader.getImage("funniActive.png"), 0, 0, 200, 400, 0, null);
 
         spr.setEvent(new ActionListener() {
             @Override

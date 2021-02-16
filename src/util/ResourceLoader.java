@@ -10,7 +10,7 @@ public class ResourceLoader {
 	private static ResourceLoader rl = new ResourceLoader();
 	
 	public static BufferedImage getImage(String fileName) {
-		Image i = (ToolkitImage) Toolkit.getDefaultToolkit().getImage(rl.getClass().getResource(fileName));
+		Image i = (ToolkitImage) Toolkit.getDefaultToolkit().getImage(rl.getClass().getResource("/" + fileName));
 
 		return toBufferedImage(i);
 	}
