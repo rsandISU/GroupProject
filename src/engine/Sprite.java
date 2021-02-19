@@ -9,6 +9,7 @@ public class Sprite implements Spritoid{
     private int width;
     private int height;
     private int layer;
+    private boolean visible;
 
     //Constructor zone
     public Sprite(BufferedImage image, int x, int y, int width, int height, int layer) {
@@ -18,6 +19,7 @@ public class Sprite implements Spritoid{
         this.width = width;
         this.height = height;
         this.layer = layer;
+        this.visible = true;
     }
 
     public Sprite(BufferedImage image, int x, int y, int layer) {
@@ -27,6 +29,7 @@ public class Sprite implements Spritoid{
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.layer = layer;
+        this.visible = true;
     }
 
     public Sprite(BufferedImage image, int layer) {
@@ -36,16 +39,25 @@ public class Sprite implements Spritoid{
         this.width = image.getWidth();
         this.height = image.getHeight();
         this.layer = layer;
+        this.visible = true;
     }
 
     public void setImage(BufferedImage image) {
         this.image = image;
     }
 
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
 
     @Override
     public BufferedImage getImage() {
-        return image;
+        if (visible) return image;
+        return null;
     }
 
     @Override

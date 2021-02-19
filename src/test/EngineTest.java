@@ -34,7 +34,6 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
                 mx = mx * 0.2;
                 my = my * 0.2;
-
             }
         });
     }

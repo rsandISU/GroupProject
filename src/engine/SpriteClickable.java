@@ -13,6 +13,7 @@ public class SpriteClickable implements Spritoid{
     private int width;
     private int height;
     private int layer;
+    private boolean visible;
 
     private BufferedImage activeImage;
     private BufferedImage inactiveImage;
@@ -30,6 +31,7 @@ public class SpriteClickable implements Spritoid{
         this.height = height;
         this.layer = layer;
         this.event = event;
+        this.visible = true;
     }
 
     public SpriteClickable(BufferedImage inactiveImage, BufferedImage activeImage, int x, int y, int layer, ActionListener event) {
@@ -41,6 +43,7 @@ public class SpriteClickable implements Spritoid{
         this.height = inactiveImage.getHeight();
         this.layer = layer;
         this.event = event;
+        this.visible = true;
     }
 
     public SpriteClickable(BufferedImage inactiveImage, BufferedImage activeImage, int layer, ActionListener event) {
@@ -52,6 +55,7 @@ public class SpriteClickable implements Spritoid{
         this.height = inactiveImage.getHeight();
         this.layer = layer;
         this.event = event;
+        this.visible = true;
     }
 
     //Is called when clicked
@@ -59,6 +63,14 @@ public class SpriteClickable implements Spritoid{
         if (event != null) {
             event.actionPerformed(new ActionEvent(this, 0, "Pressed"));
         }
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public void setActiveImage(BufferedImage img) {
@@ -87,6 +99,7 @@ public class SpriteClickable implements Spritoid{
 
     @Override
     public BufferedImage getImage() {
+        if (!visible) return null;
         if (isActive) return activeImage;
         return inactiveImage;
     }

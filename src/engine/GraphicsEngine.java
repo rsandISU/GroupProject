@@ -109,7 +109,7 @@ public class GraphicsEngine {
 
                 if (spr.getLayer() > maxLayer) maxLayer = spr.getLayer();
                 if (spr.getLayer() == layer) {
-                    areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth(), spr.getHeight(), null);
+                    if (spr.getImage() != null) areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth(), spr.getHeight(), null);
                 }
             }
             layer++;
@@ -135,6 +135,10 @@ public class GraphicsEngine {
     //Gets a sprite from the objects
     public Spritoid get(String hash) {
         return objects.get(hash);
+    }
+
+    public void remove(String hash) {
+        objects.remove(hash);
     }
 
     //Returns the object hashmap

@@ -104,6 +104,10 @@ public class Canvas {
         return engine.get(hash);
     }
 
+    public void remove(String hash) {
+        engine.remove(hash);
+    }
+
     public void clear() {
         engine.clear();
     }
