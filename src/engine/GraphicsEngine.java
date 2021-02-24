@@ -2,6 +2,8 @@ package engine;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -92,6 +94,8 @@ public class GraphicsEngine {
 
         //Draw graphicArea image
         panelG.drawImage(area, 0 + (int) xOffset, 0 + (int) yOffset, (int) (areaWidth * scalar), (int) (areaHeight * scalar), null);
+
+
     }
 
     //Draw all sprites on graphic area
@@ -109,7 +113,33 @@ public class GraphicsEngine {
 
                 if (spr.getLayer() > maxLayer) maxLayer = spr.getLayer();
                 if (spr.getLayer() == layer) {
-                    if (spr.getImage() != null) areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth(), spr.getHeight(), null);
+                    if (spr.getImage() != null) {
+                        //Image drawing time
+                        if (spr instanceof Transformable) {
+                            //This image is transformed, draw it a such
+                            Transformable trans = (Transformable) spr;
+
+                            //Affine transformation hell
+                            AffineTransform at = new AffineTransform();
+
+                            //Translate to X position
+                            //at.translate(spr.getX(), spr.getY());
+
+                            //Rotate
+                            at.rotate(Math.toRadians(trans.getAngle()), (spr.getWidth() * trans.getOffsetX()) + spr.getX(), (spr.getHeight() * trans.getOffsetY()) + spr.getY());
+
+                            //Transform, draw, and invert transform
+                            areaG.transform(at);
+                            areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth() , spr.getHeight(), null);
+                            try {
+                                areaG.transform(at.createInverse());
+                            } catch (NoninvertibleTransformException e) {
+                                System.out.println("Cannot de-transform");
+                            }
+
+                            //If not transformable, draw it "the easy way"
+                        } else areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth() , spr.getHeight(), null);
+                    }
                 }
             }
             layer++;
@@ -149,5 +179,10 @@ public class GraphicsEngine {
     //Remove all objects
     public void clear() {
         objects = new HashMap<String, Spritoid>();
+    }
+
+    //Returns all of the keys in the hashmap
+    public String[] getKeys() {
+        return objects.keySet().toArray(new String[0]);
     }
 }

@@ -43,6 +43,7 @@ public class EngineTest implements GameElement, MouseMotionListener {
         x = 0;
         y = 100;
         c.put(spr, "FUNNY");
+
     }
 
     @Override

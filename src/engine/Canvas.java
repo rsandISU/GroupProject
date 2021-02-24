@@ -108,10 +108,23 @@ public class Canvas {
         engine.remove(hash);
     }
 
+    public void remove(Spritoid spr) {
+        String targetHash = null;
+
+        for (String hash : engine.getKeys()) {
+            if (get(hash) == spr) {
+                targetHash = hash;
+            }
+        }
+
+        remove(targetHash);
+    }
+
     public void clear() {
         engine.clear();
     }
 
+    //Game element addition and getters
     public void addGameElement(String name, GameElement e) {
         gameElements.put(name, e);
 
@@ -148,6 +161,8 @@ public class Canvas {
             if (needStart) e.start();
             e.update();
         }
+
+
     }
 
     //Sets the current game element

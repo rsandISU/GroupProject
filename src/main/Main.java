@@ -3,6 +3,7 @@ package main;
 import engine.Canvas;
 import engine.Sprite;
 import test.EngineTest;
+import test.SetterTest;
 import util.ResourceLoader;
 
 import java.awt.event.ActionEvent;
@@ -16,8 +17,12 @@ public class Main {
         Canvas can = new Canvas("Test");
 
         can.addGameElement("TEST", new EngineTest(can));
+        can.addGameElement("SET", new SetterTest(can));
 
         can.setElement("TEST");
+
+        can.setElement("SET");
+
 
     }
 }
