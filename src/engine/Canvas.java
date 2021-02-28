@@ -22,6 +22,9 @@ public class Canvas {
     private EngineKeyboardAdapter eka;
     private EngineMouseAdapter ema;
 
+    //State
+    private int FPS = 0;
+
     //This will act as the main canvas onto which graphical elements will be added onto
     public Canvas(String name) {
         //Create initial JFrame
@@ -56,22 +59,42 @@ public class Canvas {
     public void startTimer() {
         ActionListener action = new ActionListener() {
 
+            final boolean DO_FPS = false;
+            final int EXP_FRAME_TENTH_SECOND= 7;
+
             long lastTime = System.currentTimeMillis();
             int count = 0;
 
+            int choke = 0;
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                //FPS Tracking, if needed
-                /*if (lastTime + 1000 < System.currentTimeMillis()) {
-                    System.out.println(count);
+                //FPS Tracking, and choke calculation
+                if (lastTime + 100 < System.currentTimeMillis()) {
+                    //Choke calculation
+                    int variance = EXP_FRAME_TENTH_SECOND - count;
+                    if (variance > 0) choke += variance;
+
+                    if (DO_FPS) System.out.println("FPS: " + count*10 + " CH: " + choke);
+                    FPS = count*10;
+
                     count = 0;
-                    lastTime = 1000 + System.currentTimeMillis();
+                    lastTime = System.currentTimeMillis();
                 }
 
-                count++;*/
+                count++;
                 engine.updatePanel();
+
                 updateGameElements();
                 updateButtons();
+
+                //Make up choked frames
+                if (choke > 0) {
+                    updateGameElements();
+                    updateButtons();
+
+                    choke--;
+                }
             }
         };
 
@@ -191,6 +214,11 @@ public class Canvas {
 
     public int getMouseY() {
         return ema.mouseY;
+    }
+
+    //Returns frames per second
+    public int getFPS() {
+        return FPS;
     }
 
 
