@@ -18,11 +18,11 @@ public class SetterTest implements GameElement {
     public SetterTest(Canvas c) {
         this.can = c;
 
-        spr = new SpriteTransformable(ResourceLoader.getImage("funni.png"), 0, 0, 150, 300, 5);
+        spr = new SpriteTransformable(ResourceLoader.getImage("test/funni.png"), 0, 0, 150, 300, 5);
 
-        background = new Sprite(ResourceLoader.getImage("testBackground.png"), 0, 0, 2);
-        foreground = new Sprite(ResourceLoader.getImage("testForeground.png"), 0, 0, 0);
-        funny = new SpriteTransformable(ResourceLoader.getImage("funniActive.png"), 960 - 250, 50, 500, 1000, 1);
+        background = new Sprite(ResourceLoader.getImage("test/testBackground.png"), 0, 0, 2);
+        foreground = new Sprite(ResourceLoader.getImage("test/testForeground.png"), 0, 0, 0);
+        funny = new SpriteTransformable(ResourceLoader.getImage("test/funniActive.png"), 960 - 250, 50, 500, 1000, 1);
 
         funny.setOffsetY(1);
     }
