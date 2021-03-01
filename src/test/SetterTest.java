@@ -1,16 +1,17 @@
 package test;
 
+import engine.*;
 import engine.Canvas;
-import engine.GameElement;
-import engine.Sprite;
-import engine.SpriteTransformable;
 import util.ResourceLoader;
+import util.TextBuilder;
+
+import java.awt.*;
 
 public class SetterTest implements GameElement {
 
     private Canvas can;
 
-    private SpriteTransformable spr;
+    private SpriteTextTransformable spr;
     private Sprite background;
     private Sprite foreground;
     private SpriteTransformable funny;
@@ -18,7 +19,8 @@ public class SetterTest implements GameElement {
     public SetterTest(Canvas c) {
         this.can = c;
 
-        spr = new SpriteTransformable(ResourceLoader.getImage("test/funni.png"), 0, 0, 150, 300, 5);
+        spr = new SpriteTextTransformable(0, 0, 5);
+        spr.setText("BRUH BRUH BRUH", Color.BLACK, 5);
 
         background = new Sprite(ResourceLoader.getImage("test/testBackground.png"), 0, 0, 2);
         foreground = new Sprite(ResourceLoader.getImage("test/testForeground.png"), 0, 0, 0);
@@ -44,10 +46,10 @@ public class SetterTest implements GameElement {
 
     @Override
     public void update() {
-        spr.setAngle(spr.getAngle() - 1);
         funny.setAngle(funny.getAngle() + 0.3);
 
-        //spr.setX(can.getMouseX() - 75);
-        //spr.setY(can.getMouseY() - 150);
+        spr.setX(can.getMouseX() - (spr.getWidth() / 2));
+        spr.setY(can.getMouseY() - (spr.getHeight()/2));
+        spr.setAngle(spr.getAngle() + 1);
     }
 }
