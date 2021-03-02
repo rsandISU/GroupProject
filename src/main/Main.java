@@ -25,9 +25,9 @@ public class Main {
         SpriteText loader = new SpriteText(0);
         can.add(loader);
 
-        loader.setText("LOADING: MENU", Color.BLACK, 3);
+        loader.setText("LOADING: DEBUG_MENU", Color.BLACK, 3);
 
-        can.addGameElement("MENU", new MenuTest(can));
+        can.addGameElement("DEBUG_MENU", new MenuTest(can));
 
         loader.setText("LOADING: TEST", Color.BLACK, 3);
 
@@ -37,7 +37,7 @@ public class Main {
 
         can.addGameElement("ROTATE", new SetterTest(can));
 
-        can.setElement("MENU");
+        can.setElement("DEBUG_MENU");
 
 
     }

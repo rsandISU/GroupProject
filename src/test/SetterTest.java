@@ -50,6 +50,6 @@ public class SetterTest implements GameElement {
 
         spr.setX(can.getMouseX() - (spr.getWidth() / 2));
         spr.setY(can.getMouseY() - (spr.getHeight()/2));
-        spr.setAngle(spr.getAngle() + 1);
+        spr.setAngle(spr.getAngle() - 1);
     }
 }

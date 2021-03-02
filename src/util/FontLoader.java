@@ -7,10 +7,7 @@ import java.io.InputStream;
 public class FontLoader {
     private static FontLoader fl = new FontLoader();
 
-    public FontLoader() {
-
-    }
-
+    //Loads up fonts
     public static Font getFont(String fileName) {
         Font font = null;
         InputStream is = fl.getClass().getResourceAsStream("/" + fileName);

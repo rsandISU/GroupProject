@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 public class TextBuilder {
-    public static Font c64Mono = FontStorage.c64Mono;
+    public static Font c64Mono = FontLoader.getFont("font/c64ProMono.ttf");
 
     public static BufferedImage buildText(String message, Color color) {
 

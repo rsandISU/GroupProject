@@ -59,7 +59,7 @@ public class Canvas {
     public void startTimer() {
         ActionListener action = new ActionListener() {
 
-            final boolean DO_FPS = false;
+            final boolean DO_FPS = true;
             final int EXP_FRAME_TENTH_SECOND= 7;
 
             long lastTime = System.currentTimeMillis();
@@ -98,7 +98,7 @@ public class Canvas {
             }
         };
 
-        Timer t = new Timer(10, action);
+        Timer t = new Timer(5, action);
         t.setRepeats(true);
         t.start();
     }
