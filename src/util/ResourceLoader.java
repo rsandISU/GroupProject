@@ -12,7 +12,12 @@ public class ResourceLoader {
 	public static BufferedImage getImage(String fileName) {
 		Image i = (ToolkitImage) Toolkit.getDefaultToolkit().getImage(rl.getClass().getResource("/" + fileName));
 
-		return toBufferedImage(i);
+		BufferedImage b = toBufferedImage(i);
+
+		if (b != null) System.out.println("LOADED: " + fileName);
+		else System.out.println("IMAGE LOAD FAILURE: " + fileName);
+
+		return b;
 	}
 
 	//Waits for an image to load, then transfers it to a buffered image
@@ -29,7 +34,6 @@ public class ResourceLoader {
 
 			return bi;
 		} catch (InterruptedException ex) {
-			ex.printStackTrace();
 		}
 
 		return null;

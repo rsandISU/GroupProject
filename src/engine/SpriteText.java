@@ -13,6 +13,7 @@ public class SpriteText implements Spritoid {
     private int height;
     private int layer;
     private boolean visible;
+    private boolean centered;
 
     //Constructor zone
     public SpriteText(int x, int y, int width, int height, int layer) {
@@ -23,6 +24,7 @@ public class SpriteText implements Spritoid {
         this.height = height;
         this.layer = layer;
         this.visible = true;
+        centered = false;
     }
 
     public SpriteText(int x, int y, int layer) {
@@ -33,6 +35,7 @@ public class SpriteText implements Spritoid {
         this.height = 0;
         this.layer = layer;
         this.visible = true;
+        centered = false;
     }
 
     public SpriteText(int layer) {
@@ -43,6 +46,7 @@ public class SpriteText implements Spritoid {
         this.height = 0;
         this.layer = layer;
         this.visible = true;
+        centered = false;
     }
 
     public void setImage(BufferedImage image) {

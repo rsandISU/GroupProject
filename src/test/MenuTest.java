@@ -2,8 +2,10 @@ package test;
 
 import engine.Canvas;
 import engine.GameElement;
+import engine.Soundable;
 import engine.SpriteClickable;
 import util.ResourceLoader;
+import util.SoundLoader;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +16,8 @@ public class MenuTest implements GameElement {
 
     private SpriteClickable engineButton;
     private SpriteClickable rotationButton;
+
+    private Soundable s;
 
     public MenuTest(Canvas c) {
         this.can = c;
@@ -31,17 +35,22 @@ public class MenuTest implements GameElement {
                 can.setElement("ROTATE");
             }
         });
+
+        s = SoundLoader.getSound("music/chip1.wav");
+        s.setRepeats(true);
     }
 
     @Override
     public void start() {
         can.add(engineButton);
         can.add(rotationButton);
+
+        s.play();
     }
 
     @Override
     public void stop() {
-
+        s.haltClip();
     }
 
     @Override

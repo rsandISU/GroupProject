@@ -15,15 +15,13 @@ public class FontLoader {
         try {
             Font tFont = Font.createFont(Font.PLAIN, is);
             font = tFont.deriveFont(Font.PLAIN, 12);
-        } catch (FontFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("FONT LOAD FAILURE: " + fileName);
+
+            return null;
         }
 
-        System.out.println(font);
+        System.out.println("LOADED: " + fileName);
 
         return font;
     }
