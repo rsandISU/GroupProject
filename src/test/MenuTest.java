@@ -1,9 +1,11 @@
 package test;
 
 import engine.*;
+import engine.Canvas;
 import util.ResourceLoader;
 import util.SoundLoader;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -55,10 +57,26 @@ public class MenuTest implements GameElement {
             }
         });
 
-        engineText = new SpriteText(860, 200, 0, 0, 1);
+        engineText = new SpriteText(860, 230, 0, 0, 1);
+        engineText.setText("ENGINE", Color.BLACK, 2.4);
+        engineText.setX(860 + ((200 - engineText.getWidth()) / 2));
+
+        rotationText = new SpriteText(860, 380, 0, 0, 1);
+        rotationText.setText("ROTATE", Color.BLACK, 2.4);
+        rotationText.setX(860 + ((200 - rotationText.getWidth()) / 2));
+
+        tetrisText = new SpriteText(860, 530, 0, 0, 1);
+        tetrisText.setText("TETRIS", Color.BLACK, 2.4);
+        tetrisText.setX(860 + ((200 - tetrisText.getWidth()) / 2));
+
+        pacmanText = new SpriteText(860, 680, 0, 0, 1);
+        pacmanText.setText("PACMAN", Color.BLACK, 2.4);
+        pacmanText.setX(860 + ((200 - pacmanText.getWidth()) / 2));
+
 
         s = SoundLoader.getSound("music/chip1.wav");
         s.setRepeats(true);
+        s.setVolume(0.6F);
     }
 
     @Override
@@ -67,6 +85,11 @@ public class MenuTest implements GameElement {
         can.add(rotationButton);
         can.add(tetrisButton);
         can.add(pacmanButton);
+
+        can.add(engineText);
+        can.add(rotationText);
+        can.add(tetrisText);
+        can.add(pacmanText);
 
         s.play();
     }
