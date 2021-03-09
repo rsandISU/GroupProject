@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
-public class tetris implements GameElement, MouseMotionListener {
+public class Tetris implements GameElement, MouseMotionListener {
     Sprite spr;
     Canvas c;
 
@@ -25,7 +25,7 @@ public class tetris implements GameElement, MouseMotionListener {
 
 
 
-    public tetris(Canvas c){
+    public Tetris(Canvas c){
         this.c = c;
 
         spr = new Sprite(LPiece, 0, 0, 100, 100, 0);
