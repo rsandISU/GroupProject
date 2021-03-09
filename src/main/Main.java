@@ -1,20 +1,16 @@
 package main;
 
 import engine.Canvas;
-import engine.Sprite;
 import engine.SpriteText;
 import test.EngineTest;
 import test.MenuTest;
 import test.SetterTest;
+import tetris.Tetris;
 import util.FontLoader;
-import util.ResourceLoader;
 
 import pacman.PacmanTest;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 
 public class Main {
 
@@ -41,9 +37,16 @@ public class Main {
 
         can.setElement("DEBUG_MENU");
 
+
         can.addGameElement("PACMANTEST", new PacmanTest(can));
 
         can.setElement("PACMANTEST");
+
+        can.addGameElement("TETRIS", new Tetris(can));
+
+        can.setElement("TETRIS");
+
+
 
     }
 }
