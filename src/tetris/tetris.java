@@ -1,20 +1,21 @@
-package test;
+
+package tetris;
 
 import engine.Canvas;
 import engine.GameElement;
-import engine.SpriteClickable;
+import engine.Sprite;
+
 import util.ResourceLoader;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
-public class EngineTest implements GameElement, MouseMotionListener {
-
-    SpriteClickable spr;
+public class tetris implements GameElement, MouseMotionListener {
+    Sprite spr;
     Canvas c;
+
+    BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
 
     double x = 0;
     double y = 0;
@@ -24,27 +25,20 @@ public class EngineTest implements GameElement, MouseMotionListener {
 
 
 
-    public EngineTest(Canvas c) {
+    public tetris(Canvas c){
         this.c = c;
-        spr = new SpriteClickable(ResourceLoader.getImage("test/funni.png"), ResourceLoader.getImage("test/funniActive.png"), 0, 0, 200, 400, 0, null);
 
-        spr.setEvent(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mx = c.getMouseX() - (x + 100);
-                my = c.getMouseY() - (y + 200);
+        spr = new Sprite(LPiece, 0, 0, 100, 100, 0);
 
-                mx = mx * 0.2;
-                my = my * 0.2;
-            }
-        });
+
     }
+
 
     @Override
     public void start() {
         x = 0;
         y = 100;
-        c.put(spr, "FUNNY");
+        c.put(spr, "LPiece");
 
     }
 
@@ -88,4 +82,8 @@ public class EngineTest implements GameElement, MouseMotionListener {
     public void mouseMoved(MouseEvent e) {
 
     }
+
+
 }
+
+

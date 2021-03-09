@@ -6,6 +6,7 @@ import engine.SpriteText;
 import test.EngineTest;
 import test.MenuTest;
 import test.SetterTest;
+import tetris.tetris;
 import util.FontLoader;
 import util.ResourceLoader;
 
@@ -38,6 +39,10 @@ public class Main {
         can.addGameElement("ROTATE", new SetterTest(can));
 
         can.setElement("DEBUG_MENU");
+
+        can.addGameElement("TETRIS", new tetris(can));
+
+        can.setElement("TETRIS");
 
 
     }
