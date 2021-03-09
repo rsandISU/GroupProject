@@ -23,7 +23,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int y = 0;
     int width = 200;
     int height = 200;
-    new Rectangle r1 = (10, 20, width, height);
+    //new Rectangle r1 = (10, 20, width, height);
     int speed = 3;
 
 
@@ -100,7 +100,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Block detection
-        if()
+        //if()
 
 
     }

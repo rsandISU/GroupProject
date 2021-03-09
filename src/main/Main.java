@@ -35,21 +35,15 @@ public class Main {
 
         can.addGameElement("ROTATE", new SetterTest(can));
 
-        can.setElement("DEBUG_MENU");
-
-<<<<<<< HEAD
-=======
+        loader.setText("LOADING: PACMANTEST", Color.BLACK, 3);
 
         can.addGameElement("PACMANTEST", new PacmanTest(can));
 
-        can.setElement("PACMANTEST");
+        loader.setText("LOADING: TETRIS", Color.BLACK, 3);
 
         can.addGameElement("TETRIS", new Tetris(can));
 
-        can.setElement("TETRIS");
-
->>>>>>> 715c9694490106a662098af3b088f40a27b5c595
-
+        can.setElement("DEBUG_MENU");
 
     }
 }

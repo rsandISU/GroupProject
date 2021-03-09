@@ -51,7 +51,7 @@ public class MenuTest implements GameElement {
         pacmanButton = new SpriteClickable(ResourceLoader.getImage("template/buttonBlank.png"), ResourceLoader.getImage("template/buttonBlankActive.png"), 860, 650, 200, 100, 0, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                can.setElement("PACMAN");
+                can.setElement("PACMANTEST");
             }
         });
 
