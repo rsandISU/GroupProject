@@ -35,10 +35,6 @@ public class Main {
 
         can.setElement("DEBUG_MENU");
 
-        can.addGameElement("TETRIS", new Tetris(can));
-
-        can.setElement("TETRIS");
-
 
     }
 }
