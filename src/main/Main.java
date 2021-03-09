@@ -9,6 +9,8 @@ import test.SetterTest;
 import util.FontLoader;
 import util.ResourceLoader;
 
+import pacman.PacmanTest;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -39,6 +41,9 @@ public class Main {
 
         can.setElement("DEBUG_MENU");
 
+        can.addGameElement("PACMANTEST", new PacmanTest(can));
+
+        can.setElement("PACMANTEST");
 
     }
 }
