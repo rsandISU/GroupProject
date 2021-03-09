@@ -8,6 +8,8 @@ import test.SetterTest;
 import tetris.Tetris;
 import util.FontLoader;
 
+import pacman.PacmanTest;
+
 import java.awt.*;
 
 public class Main {
@@ -34,6 +36,19 @@ public class Main {
         can.addGameElement("ROTATE", new SetterTest(can));
 
         can.setElement("DEBUG_MENU");
+
+<<<<<<< HEAD
+=======
+
+        can.addGameElement("PACMANTEST", new PacmanTest(can));
+
+        can.setElement("PACMANTEST");
+
+        can.addGameElement("TETRIS", new Tetris(can));
+
+        can.setElement("TETRIS");
+
+>>>>>>> 715c9694490106a662098af3b088f40a27b5c595
 
 
     }
