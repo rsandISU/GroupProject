@@ -17,8 +17,19 @@ public class Tetris implements GameElement, MouseMotionListener {
 
     BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
 
-    double x = 0;
-    double y = 0;
+    //Pacman vars
+    int x = 0;
+    int y = 0;
+    int width = 200;
+    int height = 200;
+    //new Rectangle r1 = (10, 20, width, height);
+    int moveDist = 50;
+    int drop = 0;
+    int move = 0;
+    boolean moveRight, moveLeft, moveDown;
+
+//    double x = 0;
+//    double y = 0;
 
     double mx = 10;
     double my = 0;
@@ -28,10 +39,13 @@ public class Tetris implements GameElement, MouseMotionListener {
     public Tetris(Canvas c){
         this.c = c;
 
-        spr = new Sprite(LPiece, 0, 0, 100, 100, 0);
+        //each block should have a side length of moveDist
+        spr = new Sprite(LPiece, 200, 0, moveDist*3, moveDist*2, 0);
 
 
     }
+
+
 
 
     @Override
@@ -47,30 +61,64 @@ public class Tetris implements GameElement, MouseMotionListener {
 
     }
 
+
+
+
     @Override
     public void update() {
 
-        x = x + mx;
-        y = y + my;
 
-        my = my + 0.5;
+        drop += 1;
+        move += 1;
 
-        mx = mx * 0.995;
-        my = my * 0.99;
 
-        spr.setX((int) x);
-        spr.setY((int) y);
+        //Pacman Movement
 
-        if (y > 680) {
-            my = -Math.abs(my);
-            if (my > -8) my = my * 0.8;
-            if (my > -2) my = 0;
+        //give user time to lift up the key after they pressed it down (drop > 8)
+        //set drop to zero to reset drop timer
+        if(c.getKeysDown().contains('s') && drop > 8){
+            moveDown = true;
+            drop = 0;
         }
 
-        if (Math.abs(mx) < 1) mx = 0;
 
-        if (x > 1720) mx = -Math.abs(mx);
-        if (x < 0) mx = Math.abs(mx);
+        else if(c.getKeysDown().contains('d') && move > 4){
+            moveRight = true;
+        }
+
+        else if(c.getKeysDown().contains('a') && move > 4){
+            moveLeft = true;
+        }
+
+
+
+        spr.setX(x);
+        spr.setY(y);
+
+        if(move>10){
+            move=0;
+            if(moveRight){
+                moveRight = false;
+                x = x + moveDist;
+            }
+
+            if(moveLeft){
+                moveLeft = false;
+                x = x - moveDist;
+            }
+
+            if(moveDown){
+                moveDown = false;
+                y = y + moveDist;
+            }
+
+        }
+
+        if(drop>50){
+            drop = 0;
+            y = y + 50;
+        }
+
     }
 
     @Override
