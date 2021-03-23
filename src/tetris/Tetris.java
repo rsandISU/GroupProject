@@ -7,15 +7,22 @@ import engine.Sprite;
 
 import util.ResourceLoader;
 
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
-public class Tetris implements GameElement, MouseMotionListener {
-    Sprite spr;
+public class Tetris implements GameElement, MouseMotionListener, KeyListener {
+    Sprite piece, gridSpr, rectSpr;
     Canvas c;
 
+
+    BufferedImage Grid = ResourceLoader.getImage("tetrisImages/blackGrid.jpg");
+    BufferedImage Rect = ResourceLoader.getImage("tetrisImages/blackRect.jpg");
     BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
+
+
 
     //Pacman vars
     int x = 0;
@@ -38,9 +45,12 @@ public class Tetris implements GameElement, MouseMotionListener {
 
     public Tetris(Canvas c){
         this.c = c;
-
+        
         //each block should have a side length of moveDist
-        spr = new Sprite(LPiece, 200, 0, moveDist*3, moveDist*2, 0);
+        piece = new Sprite(LPiece, 0, 0, moveDist*3, moveDist*2, 1);
+
+        //grid is 29 tall by 52 wide
+        gridSpr = new Sprite(Grid, 0, 0, moveDist*52, moveDist*29, 0);
 
 
     }
@@ -52,7 +62,8 @@ public class Tetris implements GameElement, MouseMotionListener {
     public void start() {
         x = 0;
         y = 100;
-        c.put(spr, "LPiece");
+        c.put(piece, "LPiece");
+        c.put(gridSpr, "Grid");
 
     }
 
@@ -67,53 +78,12 @@ public class Tetris implements GameElement, MouseMotionListener {
     @Override
     public void update() {
 
-
         drop += 1;
-        move += 1;
 
+        piece.setX(x);
+        piece.setY(y);
 
-        //Pacman Movement
-
-        //give user time to lift up the key after they pressed it down (drop > 8)
-        //set drop to zero to reset drop timer
-        if(c.getKeysDown().contains('s') && drop > 8){
-            moveDown = true;
-            drop = 0;
-        }
-
-
-        else if(c.getKeysDown().contains('d') && move > 4){
-            moveRight = true;
-        }
-
-        else if(c.getKeysDown().contains('a') && move > 4){
-            moveLeft = true;
-        }
-
-
-
-        spr.setX(x);
-        spr.setY(y);
-
-        if(move>10){
-            move=0;
-            if(moveRight){
-                moveRight = false;
-                x = x + moveDist;
-            }
-
-            if(moveLeft){
-                moveLeft = false;
-                x = x - moveDist;
-            }
-
-            if(moveDown){
-                moveDown = false;
-                y = y + moveDist;
-            }
-
-        }
-
+        //Tetris piece falling mechanism
         if(drop>50){
             drop = 0;
             y = y + 50;
@@ -132,6 +102,32 @@ public class Tetris implements GameElement, MouseMotionListener {
     }
 
 
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode())
+        {
+
+            case KeyEvent.VK_LEFT: x = x - moveDist;;
+                break;
+
+            case KeyEvent.VK_RIGHT: x = x + moveDist;
+                break;
+
+            case KeyEvent.VK_DOWN: y = y + moveDist;
+                drop = 0;
+                break;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
 }
 
 
