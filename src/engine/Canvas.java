@@ -33,7 +33,9 @@ public class Canvas {
         //Set up frame attributes
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        panel = new JPanel();
+        engine = new GraphicsEngine();
+
+        panel = engine;
         panel.setPreferredSize(new Dimension(960, 540));
         panel.setFocusable(true);
 
@@ -42,8 +44,6 @@ public class Canvas {
 
         //Make frame visible
         frame.setVisible(true);
-
-        engine = new GraphicsEngine(panel);
 
         //Add action listeners
         eka = new EngineKeyboardAdapter();
@@ -83,7 +83,10 @@ public class Canvas {
                 }
 
                 count++;
-                engine.updatePanel();
+
+                frame.repaint();
+
+
 
                 updateGameElements();
                 updateButtons();

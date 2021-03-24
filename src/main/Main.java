@@ -10,7 +10,8 @@ import util.FontLoader;
 
 import pacman.PacmanTest;
 
-import java.awt.*;
+import menu.Menu;
+import java.awt.Color;
 
 public class Main {
 
@@ -22,6 +23,10 @@ public class Main {
 
         SpriteText loader = new SpriteText(0);
         can.add(loader);
+
+        loader.setText("LOADING: MENU", Color.BLACK, 3);
+
+        can.addGameElement("MENU", new Menu(can));
 
         loader.setText("LOADING: DEBUG_MENU", Color.BLACK, 3);
 

@@ -7,11 +7,7 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-public class GraphicsEngine {
-    private JPanel panel;
-    private BufferedImage area;
-    private Graphics2D panelG;
-    private Graphics2D areaG;
+public class GraphicsEngine extends JPanel{
 
     //Panel size storage
     private int width;
@@ -29,43 +25,21 @@ public class GraphicsEngine {
     //Sprite Storage
     HashMap<String, Spritoid> objects = new HashMap<String, Spritoid>();
 
-    public GraphicsEngine(JPanel panel) {
-        this.panel = panel;
-        panelG = (Graphics2D) panel.getGraphics();
 
-        area = new BufferedImage(areaWidth, areaHeight, BufferedImage.TYPE_INT_ARGB);
-        areaG = (Graphics2D) area.getGraphics();
-
-        areaG.setColor(Color.WHITE);
-        areaG.fillRect(0, 0, areaWidth, areaHeight);
-    }
-
-    private int cont;
-
-    //Updates the graphics on the panel
-    public void updatePanel() {
-        //Update area graphics
-        update();
+    @Override
+    public void paintComponent(Graphics g) {
+        Graphics2D panelG = (Graphics2D) g;
 
         //Redraw time!
 
         //Remake the graphics object if the panel gets resized
         //This is a terrible piece of code, but I don't know how to use JPanel graphics correctly nor do I want to learn
-        if (width != panel.getWidth() || height != panel.getHeight()) {
-            width = panel.getWidth();
-            height = panel.getHeight();
-            panelG = (Graphics2D) panel.getGraphics();
-
-            cont = 5;
+        if (width != this.getWidth() || height != this.getHeight()) {
+            width = this.getWidth();
+            height = this.getHeight();
+            panelG = (Graphics2D) this.getGraphics();
         }
 
-        if (cont > 0) {
-            //Black out the panel
-            panelG.setColor(Color.BLACK);
-            panelG.fillRect(0, 0 , panel.getWidth(), panel.getHeight());
-
-            cont--;
-        }
         //graphicArea scaling fun!
         double scalar = 1.0;
         double xOffset = 0;
@@ -92,18 +66,23 @@ public class GraphicsEngine {
         offsetY = yOffset;
         areaScalar = scalar;
 
-        //Draw graphicArea image
-        panelG.drawImage(area, 0 + (int) xOffset, 0 + (int) yOffset, (int) (areaWidth * scalar), (int) (areaHeight * scalar), null);
+        panelG.setColor(Color.white);
+        panelG.fillRect(0 + (int) xOffset, 0 + (int) yOffset, (int) (areaWidth * scalar), (int) (areaHeight * scalar));
+
+        updateGraphics((int) xOffset, (int) yOffset, scalar, panelG);
+
+
+        //Black out the panel
+        panelG.setColor(Color.BLACK);
+        panelG.fillRect(0, 0 , this.getWidth(), (int) yOffset);
+        panelG.fillRect(0, this.getHeight() - ((int) yOffset+2), this.getWidth(), (int) yOffset+2);
+        panelG.fillRect(0, 0, (int) xOffset, this.getHeight());
+        panelG.fillRect(this.getWidth() - ((int) xOffset+2), 0, (int) xOffset+2, this.getHeight());
 
 
     }
 
-    //Draw all sprites on graphic area
-    public void update() {
-        //Wipe background
-        areaG.setColor(Color.WHITE);
-        areaG.fillRect(0, 0, areaWidth, areaHeight);
-
+    public void updateGraphics(int xOffset, int yOffset, double scalar, Graphics2D panelG) {
         //Draw all of the sprites
         int layer = 0;
         int maxLayer = 0;
@@ -116,6 +95,7 @@ public class GraphicsEngine {
                     if (spr.getImage() != null) {
                         //Image drawing time
                         if (spr instanceof Transformable) {
+
                             //This image is transformed, draw it a such
                             Transformable trans = (Transformable) spr;
 
@@ -126,19 +106,23 @@ public class GraphicsEngine {
                             //at.translate(spr.getX(), spr.getY());
 
                             //Rotate
-                            at.rotate(Math.toRadians(trans.getAngle()), (spr.getWidth() * trans.getOffsetX()) + spr.getX(), (spr.getHeight() * trans.getOffsetY()) + spr.getY());
+                            at.rotate(Math.toRadians(trans.getAngle()), xOffset + ((spr.getWidth() * scalar) * trans.getOffsetX()) + (spr.getX() * scalar), yOffset + ((spr.getHeight() * scalar) * trans.getOffsetY()) + (spr.getY() * scalar));
 
                             //Transform, draw, and invert transform
-                            areaG.transform(at);
-                            areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth() , spr.getHeight(), null);
+                            panelG.transform(at);
+
+                            panelG.drawImage(spr.getImage(), xOffset + (int) (spr.getX() * scalar), yOffset + (int) (spr.getY() * scalar), (int) (spr.getWidth() * scalar), (int) (spr.getHeight() * scalar), null);
                             try {
-                                areaG.transform(at.createInverse());
+                                panelG.transform(at.createInverse());
                             } catch (NoninvertibleTransformException e) {
                                 System.out.println("Cannot de-transform");
                             }
 
                             //If not transformable, draw it "the easy way"
-                        } else areaG.drawImage(spr.getImage(), spr.getX(), spr.getY(), spr.getWidth() , spr.getHeight(), null);
+
+                        } else {
+                            panelG.drawImage(spr.getImage(), xOffset + (int) (spr.getX() * scalar), yOffset + (int) (spr.getY() * scalar), (int) (spr.getWidth() * scalar), (int) (spr.getHeight() * scalar), null);
+                        }
                     }
                 }
             }
