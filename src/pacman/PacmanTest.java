@@ -6,23 +6,25 @@ import engine.Sprite;
 import engine.SpriteClickable;
 import util.ResourceLoader;
 
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.awt.Rectangle;
+import java.awt.Point;
 
 public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite backgroundspr;
+    Sprite boardspr;
     Sprite spr;
     Sprite block1;
     Canvas c;
 
 
     //Pacman vars
-    int x = 0;
-    int y = 0;
-    int width = 55;
-    int height = 55;
+    int x = 935;
+    int y = 590;
+    int width = 45;
+    int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
     int speed = 3;
 
@@ -34,6 +36,33 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int block1height = 200;
     Rectangle block1R = new Rectangle(block1x, block1y, block1width, block1height);
 
+    //Block2
+    Rectangle block2R = new Rectangle(628, 196, 82, 52);
+
+    //Block3
+    //Rectangle block3R = new Rectangle(0, 0, 1, 1);
+
+    //Block4
+    //Rectangle block4R = new Rectangle(0, 0, 1, 1);
+
+    //Block5
+    //Rectangle block5R = new Rectangle(0, 0, 1, 1);
+
+    //Block6
+    //Rectangle block6R = new Rectangle(0, 0, 1, 1);
+
+    //Block7
+    //Rectangle block7R = new Rectangle(0, 0, 1, 1);
+
+    //Block8
+    //Rectangle block8R = new Rectangle(0, 0, 1, 1);
+
+    //Block9
+    //Rectangle block9R = new Rectangle(0, 0, 1, 1);
+
+    //Block10
+    //Rectangle block10R = new Rectangle(0, 0, 1, 1);
+
 
 
     //Put buffered images here
@@ -44,6 +73,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     BufferedImage down = ResourceLoader.getImage("pacman/down.png");
     BufferedImage block = ResourceLoader.getImage("pacman/block.png");
     BufferedImage background = ResourceLoader.getImage("pacman/background.png");
+    BufferedImage board = ResourceLoader.getImage("pacman/board.png");
 
 
     public PacmanTest(Canvas c) {
@@ -52,20 +82,23 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Background
         backgroundspr = new Sprite(background, 528, 0, 864, 1080, 0);
 
+        //Board
+        boardspr = new Sprite(board, 540, 116, 840, 887, 1);
+
         //Pacman
-        spr = new Sprite(right, x, y, width, height, 1);
+        spr = new Sprite(neutral, x, y, width, height, 2);
 
         //Block Test
-        block1 = new Sprite(block, block1x, block1y, block1width, block1height, 1);
+        block1 = new Sprite(block, block1x, block1y, block1width, block1height, 2);
     }
 
     @Override
     public void start() {
         c.put(backgroundspr, "background");
+        c.put(boardspr, "board");
         c.put(spr, "FUNNY");
         c.put(block1, "FUNNY2");
-        x = 0;
-        y = 200;
+
 
 
     }
@@ -84,26 +117,29 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Pacman Movement
         if(c.getKeysDown().contains('s') && !blockCollideTestY(true)){
             y = y + speed;
-            spr.setImage(down);
+            //spr.setImage(down);
         } else if(c.getKeysDown().contains('w') && !blockCollideTestY(false)){
             y = y - speed;
-            spr.setImage(up);
+            //spr.setImage(up);
         } else if(c.getKeysDown().contains('d') && !blockCollideTestX(true)){
             x = x + speed;
-            spr.setImage(right);
+            //spr.setImage(right);
         } else if(c.getKeysDown().contains('a') && !blockCollideTestX(false)){
             x = x - speed;
-            spr.setImage(left);
+            //spr.setImage(left);
         } else if(!c.getKeysDown().contains('a')&&!c.getKeysDown().contains('d')&&!c.getKeysDown().contains('s')&&!c.getKeysDown().contains('w')){
-            spr.setImage(neutral);
+            //spr.setImage(neutral);
 
         }
 
         spr.setX((int) x);
         spr.setY((int) y);
 
-
-
+        //For debugging and setting coordinate positions
+        //Point p = MouseInfo.getPointerInfo().getLocation();
+        //p.translate(459, 263);
+        //System.out.println(p.getLocation());
+        //System.out.println(x + " " + y);
 
 
     }
@@ -113,10 +149,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         Rectangle pacmanXT = new Rectangle(x+speed, y, width, height);
         Rectangle pacmanXF = new Rectangle(x-speed, y, width, height);
+        Rectangle pacmanXT1 = new Rectangle(x+1, y, width, height);
+        Rectangle pacmanXF1 = new Rectangle(x-1, y, width, height);
 
         //True direction is up and false is down
         if(direction){
-            if(pacmanXT.intersects(block1R)){
+            if(pacmanXT.intersects(block1R)||pacmanXT.intersects(block2R)){
 
 
                 return true;
@@ -124,7 +162,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }else {
 
-            if(pacmanXF.intersects(block1R)){
+            if(pacmanXF.intersects(block1R)||pacmanXF.intersects(block2R)){
 
 
                 return true;
@@ -143,7 +181,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         //True direction is up and false is down
         if(direction){
-            if(pacmanYT.intersects(block1R)){
+            if(pacmanYT.intersects(block1R)||pacmanYT.intersects(block2R)){
 
 
                 return true;
@@ -151,7 +189,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }else {
 
-            if(pacmanYF.intersects(block1R)){
+            if(pacmanYF.intersects(block1R)||pacmanYF.intersects(block2R)){
 
 
                 return true;
@@ -169,7 +207,13 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        int x=e.getX();
+        int y=e.getY();
+        System.out.println(x+","+y);//these co-ords are relative to the component
     }
+
+
+
+
 }
 
