@@ -54,6 +54,7 @@ public class HighScoreTable {
 
     public void add(ScoreEntry score) {
         highScoreEntries.add(score);
+        update();
     }
 
     public void update() {

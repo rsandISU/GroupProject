@@ -40,12 +40,11 @@ public class Menu implements GameElement {
         playlist.add(SoundLoader.getSound("music/chip3.wav"));
         playlist.add(SoundLoader.getSound("music/chip4.wav"));
         playlist.add(SoundLoader.getSound("music/chip5.wav"));
-
     }
 
     @Override
     public void start() {
-        System.out.println("Building...");
+        System.out.println("Building Menu...");
         meb.buildMenu();
 
         tetrisHighScore.build("tetris");
@@ -86,12 +85,29 @@ public class Menu implements GameElement {
     }
 
     public void addTetrisScore(int score) {
-        String name = JOptionPane.showInputDialog("Enter Your Initials");
-        tetrisHighScore.add(new ScoreEntry(score, name));
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String name = JOptionPane.showInputDialog("Enter Your Initials");
+                tetrisHighScore.add(new ScoreEntry(score, name));
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
+
     }
 
     public void addPacmanScore(int score) {
-        String name = JOptionPane.showInputDialog("Enter Your Initials");
-        pacmanHighScore.add(new ScoreEntry(score, name));
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                String name = JOptionPane.showInputDialog("Enter Your Initials");
+                pacmanHighScore.add(new ScoreEntry(score, name));
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
     }
 }

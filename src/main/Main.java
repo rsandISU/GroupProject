@@ -17,8 +17,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        FontLoader.getFont("font/c64ProMono.ttf");
-
         Canvas can = new Canvas("Java Game Arcade");
 
         SpriteText loader = new SpriteText(0);
