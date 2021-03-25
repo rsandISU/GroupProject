@@ -121,7 +121,7 @@ public class GraphicsEngine extends JPanel{
                             //If not transformable, draw it "the easy way"
 
                         } else {
-                            panelG.drawImage(spr.getImage(), xOffset + (int) (spr.getX() * scalar), yOffset + (int) (spr.getY() * scalar), (int) (spr.getWidth() * scalar), (int) (spr.getHeight() * scalar), null);
+                            panelG.drawImage(spr.getImage(), xOffset + (int) (spr.getX() * scalar), yOffset + (int) (spr.getY() * scalar), (int) ((spr.getWidth()+1) * scalar), (int) ((spr.getHeight()+1) * scalar), null);
                         }
                     }
                 }

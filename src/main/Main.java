@@ -19,7 +19,7 @@ public class Main {
 
         FontLoader.getFont("font/c64ProMono.ttf");
 
-        Canvas can = new Canvas("Test");
+        Canvas can = new Canvas("Java Game Arcade");
 
         SpriteText loader = new SpriteText(0);
         can.add(loader);
@@ -48,7 +48,7 @@ public class Main {
 
         can.addGameElement("TETRIS", new Tetris(can));
 
-        can.setElement("DEBUG_MENU");
+        can.setElement("MENU");
 
     }
 }
