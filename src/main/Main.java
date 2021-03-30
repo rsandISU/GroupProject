@@ -10,18 +10,21 @@ import util.FontLoader;
 
 import pacman.PacmanTest;
 
-import java.awt.*;
+import menu.Menu;
+import java.awt.Color;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        FontLoader.getFont("font/c64ProMono.ttf");
-
-        Canvas can = new Canvas("Test");
+        Canvas can = new Canvas("Java Game Arcade");
 
         SpriteText loader = new SpriteText(0);
         can.add(loader);
+
+        loader.setText("LOADING: MENU", Color.BLACK, 3);
+
+        can.addGameElement("MENU", new Menu(can));
 
         loader.setText("LOADING: DEBUG_MENU", Color.BLACK, 3);
 
@@ -43,7 +46,7 @@ public class Main {
 
         can.addGameElement("TETRIS", new Tetris(can));
 
-        can.setElement("DEBUG_MENU");
+        can.setElement("MENU");
 
     }
 }

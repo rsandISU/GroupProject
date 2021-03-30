@@ -203,9 +203,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     @Override
     public void mouseMoved(MouseEvent e) {
 
+
         //Coordinates for testing
         //int x=e.getX();
         //int y=e.getY();
+
         //System.out.println(x+","+y);//these co-ords are relative to the component
     }
 

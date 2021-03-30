@@ -10,6 +10,7 @@ public class Soundable extends Thread{
 
 
     private boolean isRunning;
+    private boolean isPlaying;
     private boolean callRun;
 
 
@@ -25,6 +26,7 @@ public class Soundable extends Thread{
         setVolume(1.0F);
 
         callRun = false;
+        isPlaying = false;
     }
 
     public void run() {
@@ -43,13 +45,19 @@ public class Soundable extends Thread{
     }
 
     private void startPlay() {
+
+
         isRunning = true;
+
 
         clip.setFramePosition(0);
         clip.start();
 
+        updateVolume();
+
         //Wait for clip to start
         while (!clip.isRunning()) dwell();
+
 
         //Terrible clip polling code
         while (clip.isRunning()) {
@@ -58,9 +66,15 @@ public class Soundable extends Thread{
 
             if (!isRunning) {
                 clip.stop();
+                isPlaying = false;
             }
         }
 
+        isPlaying = false;
+    }
+
+    public boolean isRunning() {
+        return isPlaying;
     }
 
     private void dwell() {
@@ -80,6 +94,7 @@ public class Soundable extends Thread{
     public void play() {
         haltClip();
         callRun = true;
+        isPlaying = true;
     }
 
     public boolean clipPlaying() {
@@ -121,8 +136,7 @@ public class Soundable extends Thread{
         return globalVolume;
     }
 
-    public void setGlobalVolume(float globalVolume) {
-        this.globalVolume = globalVolume;
-        updateVolume();
+    public static void setGlobalVolume(float volume) {
+        globalVolume = volume;
     }
 }
