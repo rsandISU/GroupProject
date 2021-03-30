@@ -26,7 +26,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int width = 45;
     int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
-    int speed = 3;
+    int speed = 2;
 
 
     //Block vars
@@ -38,7 +38,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
     //Block1
-    Rectangle block1R = new Rectangle(628, 196, 82, 52);
+    Rectangle block1R = new Rectangle(628, 196, 80, 52);
 
     //Block2
     Rectangle block2R = new Rectangle(772, 196, 114, 52);
@@ -47,26 +47,49 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Rectangle block3R = new Rectangle(1040, 196, 114, 52);
 
     //Block4
-    Rectangle block4R = new Rectangle(1216, 196, 82, 52);
+    Rectangle block4R = new Rectangle(1216, 196, 80, 52);
 
     //Block5
-    Rectangle block5R = new Rectangle(628, 308, 80, 23);
+    Rectangle block5R = new Rectangle(628, 308, 80, 28);
 
     //Block6
-    Rectangle block6R = new Rectangle(1216, 308, 80, 23);
+    Rectangle block6R = new Rectangle(1216, 308, 80, 28);
 
     //Block7
-    Rectangle block7R = new Rectangle(771, 563, 27, 107);
+    Rectangle block7R = new Rectangle(772, 563, 28, 107);
 
     //Block8
-    Rectangle block8R = new Rectangle(1126, 563, 26, 107);
+    Rectangle block8R = new Rectangle(1126, 563, 28, 107);
 
     //Block9
-    Rectangle block9R = new Rectangle(771, 732, 117, 20);
+    Rectangle block9R = new Rectangle(772, 732, 114, 28);
 
     //Block10
-    Rectangle block10R = new Rectangle(1038, 732, 114, 20);
+    Rectangle block10R = new Rectangle(1040, 732, 114, 28);
 
+
+
+
+    //Block12
+    Rectangle block12R = new Rectangle(772, 308, 28, 194);
+
+    //Block13
+    Rectangle block13R = new Rectangle(800, 391, 86, 28);
+
+    //Block14
+    Rectangle block14R = new Rectangle(860, 308, 204, 28);
+
+    //Block15
+    Rectangle block15R = new Rectangle(948, 336, 28, 83);
+
+    //Block16
+    Rectangle block16R = new Rectangle(1126, 308, 28, 194);
+
+    //Block17
+    Rectangle block17R = new Rectangle(1040, 391, 86, 28);
+
+    //Block18
+    Rectangle block18R = new Rectangle(860, 642, 204, 28);
 
 
     //Put buffered images here
@@ -183,7 +206,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     }
 
     private boolean Rectangle(Rectangle pacmanXT) {
-        if(pacmanXT.intersects(block1R)||pacmanXT.intersects(block2R)||pacmanXT.intersects(block3R)||pacmanXT.intersects(block4R)||pacmanXT.intersects(block5R)||pacmanXT.intersects(block6R)||pacmanXT.intersects(block7R)||pacmanXT.intersects(block8R)||pacmanXT.intersects(block9R)||pacmanXT.intersects(block10R)){
+        if(pacmanXT.intersects(block1R)||pacmanXT.intersects(block2R)||pacmanXT.intersects(block3R)
+                ||pacmanXT.intersects(block4R)||pacmanXT.intersects(block5R)||pacmanXT.intersects(block6R)
+                ||pacmanXT.intersects(block7R)||pacmanXT.intersects(block8R)||pacmanXT.intersects(block9R)
+                ||pacmanXT.intersects(block10R)||pacmanXT.intersects(block12R)||pacmanXT.intersects(block13R)
+                ||pacmanXT.intersects(block14R)||pacmanXT.intersects(block15R)||pacmanXT.intersects(block16R)
+                ||pacmanXT.intersects(block17R) ||pacmanXT.intersects(block18R)){
 
 
             return true;
@@ -205,10 +233,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Coordinates for testing
-        //int x=e.getX();
-        //int y=e.getY();
-
-        //System.out.println(x+","+y);//these co-ords are relative to the component
+        int x=e.getX();
+        int y=e.getY();
+        System.out.println(x+","+y);//these co-ords are relative to the component
     }
 
 
