@@ -87,7 +87,6 @@ public class Soundable extends Thread{
     }
 
     public void haltClip() {
-        System.out.println("Halting...");
         isRunning = false;
         callRun = false;
     }

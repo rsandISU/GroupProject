@@ -33,7 +33,7 @@ public class Menu implements GameElement {
 
         currentlyPlaying = null;
 
-        Soundable.setGlobalVolume(0.8F);
+        Soundable.setGlobalVolume(0.7F);
 
         playlist.add(SoundLoader.getSound("music/chip1.wav"));
         playlist.add(SoundLoader.getSound("music/chip2.wav"));
