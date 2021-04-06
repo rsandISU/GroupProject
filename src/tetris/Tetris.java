@@ -6,20 +6,30 @@ import engine.GameElement;
 import engine.Sprite;
 
 import util.ResourceLoader;
-
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class Tetris implements GameElement, MouseMotionListener, KeyListener {
-    Sprite piece, gridSpr, left, right, bottom;
+    Sprite left, right, bottom, pieceSpr;
     Canvas c;
 
 
-    BufferedImage Grid = ResourceLoader.getImage("tetrisImages/blackGrid.jpg");
+    BufferedImage Empty = ResourceLoader.getImage("tetrisImages/empty.jpg");
+    BufferedImage IPiece = ResourceLoader.getImage("tetrisImages/IPiece.png");
+    BufferedImage JPiece = ResourceLoader.getImage("tetrisImages/JPiece.png");
     BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
+    BufferedImage OPiece = ResourceLoader.getImage("tetrisImages/OPiece.png");
+    BufferedImage SPiece = ResourceLoader.getImage("tetrisImages/SPiece.png");
+    BufferedImage TPiece = ResourceLoader.getImage("tetrisImages/TPiece.png");
+    BufferedImage ZPiece = ResourceLoader.getImage("tetrisImages/ZPiece.png");
+
+
 
     //Tetris background
     BufferedImage LeftTB = ResourceLoader.getImage("tetrisImages/leftTetrisBackground.jpg");
@@ -27,24 +37,26 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     BufferedImage BottomTB = ResourceLoader.getImage("tetrisImages/bottomTetrisBackground.jpg");
 
 
-    //Pacman vars
-    int x = 0;
-    int y = 0;
+    //Tetris vars
+    int mx = 0;
+    int my = 0;
     int moveDist = 50;
     int drop = 0;
-
-
-
+    private Point pieceOrigin;
+    private int currentPiece;
+    private int rotation;
+    private ArrayList<Integer> nextPieces = new ArrayList<Integer>();
+    int well[][] = new int[21][18];
+    Sprite grid[][] = new Sprite[21][18];
+    private long score;
 
 
     public Tetris(Canvas c){
         this.c = c;
 
         //each block should have a side length of moveDist
-        piece = new Sprite(LPiece, 0, 0, moveDist*3, moveDist*2, 10);
+        pieceSpr = new Sprite(Empty, 0, 0, moveDist, moveDist, 10);
 
-        //grid is 29 tall by 52 wide
-        gridSpr = new Sprite(Grid, 0, 0, moveDist*52, moveDist*29, 0);
 
         //background is 38.5 wide by 21.5 tall
         left = new Sprite(LeftTB, 0, 0, moveDist*10, moveDist*22,1);
@@ -52,20 +64,96 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         bottom = new Sprite(BottomTB, moveDist*10, moveDist*21, moveDist*18, moveDist*4,4);
 
 
+
+        //Generates the sprites that exist in grid[][]
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                grid[i][j] = new Sprite(Empty, moveDist*10 + j*moveDist, i * moveDist, moveDist, moveDist, 1);
+            }
+        }
+
+        init();
     }
+
+
+
+    //grid size is 18 wide by 21 tall
+    // Creates a border around the well and initializes the dropping piece
+    private void init() {
+
+        for (int i = 0; i < well.length; i++) {
+            for (int j = 0; j < well[my].length; j++) {
+                well[i][j] = 0;
+            }
+        }
+        newPiece();
+    }
+
+
+
+    // Put a new, random piece into the dropping position
+    public void newPiece() {
+        pieceOrigin = new Point(5, 2);
+        rotation = 0;
+        if (nextPieces.isEmpty()) {
+            Collections.addAll(nextPieces, 0, 1, 2, 3, 4, 5, 6);
+            Collections.shuffle(nextPieces);
+        }
+        currentPiece = nextPieces.get(0);
+        nextPieces.remove(0);
+    }
+/*
+    // Collision test for the dropping piece
+    private boolean collidesAt(int x, int y, int rotation) {
+        for (Point p : Piece[currentPiece][rotation]) {
+            if (well[p.x + x][p.y + y] != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+*/
+
+
+    // Rotate the piece clockwise or counterclockwise
+    public void rotate(int i) {
+        int newRotation = (rotation + i) % 4;
+        if (newRotation < 0) {
+            newRotation = 3;
+        }
+//        if (!collidesAt(pieceOrigin.x, pieceOrigin.y, newRotation)) {
+//            rotation = newRotation;
+//        }
+        //repaint();
+    }
+
+//**************************************************************************************
+
 
 
 
 
     @Override
     public void start() {
-        x = 0;
-        y = 100;
-        c.put(piece, "LPiece");
-        c.put(gridSpr, "Grid");
+        int x = 0;
+        int y = 100;
         c.put(left, "LeftTB");
         c.put(right, "RightTB");
         c.put(bottom, "BottomTB");
+
+        //Adds all of the content of gird[][] onto the canvas
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                c.add(grid[i][j]);
+
+            }
+        }
+
+
+
+
+
+
 
     }
 
@@ -80,15 +168,16 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     @Override
     public void update() {
 
-        drop += 1;
 
-        piece.setX(x);
-        piece.setY(y);
-
-        //Tetris piece falling mechanism
-        if(drop>50){
-            drop = 0;
-            y = y + 50;
+        //Copy the state of well[][] over to grid[][]
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (well[i][j] == 0) {
+                    grid[i][j].setImage(Empty);
+                } else {
+                    grid[i][j].setImage(IPiece);
+                }
+            }
         }
 
     }
@@ -114,13 +203,13 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         switch (e.getKeyCode())
         {
 
-            case KeyEvent.VK_LEFT: x = x - moveDist;;
+            case KeyEvent.VK_LEFT: mx = mx - moveDist;;
                 break;
 
-            case KeyEvent.VK_RIGHT: x = x + moveDist;
+            case KeyEvent.VK_RIGHT: mx = mx + moveDist;
                 break;
 
-            case KeyEvent.VK_DOWN: y = y + moveDist;
+            case KeyEvent.VK_DOWN: my = my + moveDist;
                 drop = 0;
                 break;
         }
