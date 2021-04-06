@@ -3,104 +3,47 @@ package pacman;
 import engine.Canvas;
 import engine.GameElement;
 import engine.Sprite;
-import engine.SpriteClickable;
+//import engine.SpriteClickable;
 import util.ResourceLoader;
-
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
-import java.awt.Point;
+import java.util.ArrayList;
+//import java.awt.Point;
 
 public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite backgroundspr;
     Sprite boardspr;
-    Sprite spr;
-    Sprite block;
+    Sprite pacmanspr;
     Canvas c;
 
 
     //Pacman vars
     int x = 935;
     int y = 590;
+    int speed = 2;
     int width = 45;
     int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
-    int speed = 2;
 
+    //Pellets
+    int pelletNumber1 = 5;
+    int pelletNumber2 = 5;
+    int pelletNumber = pelletNumber1 + pelletNumber2;
+    int pelletSize = 50;
+    Rectangle pelletR;
+    ArrayList<Sprite> pelletList = new ArrayList<>();
 
-    //Block vars
-    //int blockx = 300;
-    //int blocky = 540;
-    //int blockwidth = 200;
-    //int blockheight = 200;
-    //Rectangle blockR = new Rectangle(blockx, blocky, blockwidth, blockheight);
+    //Boundaries
 
-
-    //Block1
-    Rectangle block1R = new Rectangle(628, 196, 80, 52);
-
-    //Block2
-    Rectangle block2R = new Rectangle(772, 196, 114, 52);
-
-    //Block3
-    Rectangle block3R = new Rectangle(1040, 196, 114, 52);
-
-    //Block4
-    Rectangle block4R = new Rectangle(1216, 196, 80, 52);
-
-    //Block5
-    Rectangle block5R = new Rectangle(628, 308, 80, 28);
-
-    //Block6
-    Rectangle block6R = new Rectangle(1216, 308, 80, 28);
-
-    //Block7
-    Rectangle block7R = new Rectangle(772, 563, 28, 107);
-
-    //Block8
-    Rectangle block8R = new Rectangle(1126, 563, 28, 107);
-
-    //Block9
-    Rectangle block9R = new Rectangle(772, 732, 114, 28);
-
-    //Block10
-    Rectangle block10R = new Rectangle(1040, 732, 114, 28);
-
-
-
-
-    //Block12
-    Rectangle block12R = new Rectangle(772, 308, 28, 194);
-
-    //Block13
-    Rectangle block13R = new Rectangle(800, 391, 86, 28);
-
-    //Block14
-    Rectangle block14R = new Rectangle(860, 308, 204, 28);
-
-    //Block15
-    Rectangle block15R = new Rectangle(948, 336, 28, 83);
-
-    //Block16
-    Rectangle block16R = new Rectangle(1126, 308, 28, 194);
-
-    //Block17
-    Rectangle block17R = new Rectangle(1040, 391, 86, 28);
-
-    //Block18
-    Rectangle block18R = new Rectangle(860, 642, 204, 28);
-
+    ArrayList<Rectangle> boundaryList = new ArrayList<>();
 
     //Put buffered images here
     BufferedImage neutral = ResourceLoader.getImage("pacman/circle.png");
-    BufferedImage right = ResourceLoader.getImage("pacman/right.png");
-    BufferedImage left = ResourceLoader.getImage("pacman/left.png");
-    BufferedImage up = ResourceLoader.getImage("pacman/up.png");
-    BufferedImage down = ResourceLoader.getImage("pacman/down.png");
-    BufferedImage blockpic = ResourceLoader.getImage("pacman/block.png");
     BufferedImage background = ResourceLoader.getImage("pacman/background.png");
     BufferedImage board = ResourceLoader.getImage("pacman/board.png");
+
 
 
     public PacmanTest(Canvas c) {
@@ -113,18 +56,148 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         boardspr = new Sprite(board, 540, 116, 840, 887, 1);
 
         //Pacman
-        spr = new Sprite(neutral, x, y, width, height, 2);
+        pacmanspr = new Sprite(neutral, x, y, width, height, 2);
 
-        //Block Test
-        //block1 = new Sprite(blockpic, blockx, blocky, blockwidth, blockheight, 2);
+        //Pellets
+        for(int i = 0; i < pelletNumber1; i++){
+
+            pelletList.add(new Sprite(neutral, 100 * i, 300, 45, 45, 2));
+
+        }
+
+        for(int i = 0; i < pelletNumber2; i++){
+
+            pelletList.add(new Sprite(neutral, 500, 100 * i, 45, 45, 2));
+
+        }
+
+
+        //Boundaries
+        //Block1
+        boundaryList.add(new Rectangle(628, 196, 80, 52));
+        //Block2
+        boundaryList.add(new Rectangle(772, 196, 114, 52));
+        //Block3
+        boundaryList.add(new Rectangle(1040, 196, 114, 52));
+        //Block4
+        boundaryList.add(new Rectangle(1216, 196, 80, 52));
+        //Block5
+        boundaryList.add(new Rectangle(628, 308, 80, 28));
+        //Block6
+        boundaryList.add(new Rectangle(1216, 308, 80, 28));
+        //Block7
+        boundaryList.add(new Rectangle(772, 563, 28, 107));
+        //Block8
+        boundaryList.add(new Rectangle(1126, 563, 28, 107));
+        //Block9
+        boundaryList.add(new Rectangle(772, 732, 114, 28));
+        //Block10
+        boundaryList.add(new Rectangle(1040, 732, 114, 28));
+        //Block12
+        boundaryList.add(new Rectangle(772, 308, 28, 194));
+        //Block13
+        boundaryList.add(new Rectangle(800, 391, 86, 28));
+        //Block14
+        boundaryList.add(new Rectangle(860, 308, 204, 28));
+        //Block15
+        boundaryList.add(new Rectangle(948, 336, 28, 83));
+        //Block16
+        boundaryList.add(new Rectangle(1126, 308, 28, 194));
+        //Block17
+        boundaryList.add(new Rectangle(1040, 391, 86, 28));
+        //Block18
+        boundaryList.add(new Rectangle(860, 642, 204, 28));
+        //Block19
+        boundaryList.add(new Rectangle(948, 670, 28, 90));
+        //Block20
+        boundaryList.add(new Rectangle(628, 900, 257, 28));
+        //Block21
+        boundaryList.add(new Rectangle(772, 818, 28, 82));
+        //Block22
+        boundaryList.add(new Rectangle(860, 818, 204, 28));
+        //Block23
+        boundaryList.add(new Rectangle(948, 846, 28, 82));
+        //Block24
+        boundaryList.add(new Rectangle(1040, 900, 256, 28));
+        //Block25
+        boundaryList.add(new Rectangle(1126, 818, 28, 82));
+        //Block26
+        boundaryList.add(new Rectangle(680, 732, 28, 114));
+        //Block27
+        boundaryList.add(new Rectangle(628, 732, 52, 28));
+        //Block28
+        boundaryList.add(new Rectangle(1216, 732, 28, 114));
+        //Block29
+        boundaryList.add(new Rectangle(1244, 732, 52, 28));
+
+
+
+        //Block30
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block31
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block32
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block33
+        boundaryList.add(new Rectangle(550, 390, 158, 112));
+
+        //Block34
+        boundaryList.add(new Rectangle(550, 126, 12, 264));
+
+        //Block35
+        boundaryList.add(new Rectangle(562, 126, 798, 12));
+
+        //Block36
+        boundaryList.add(new Rectangle(1360, 126, 12, 264));
+
+        //Block37
+        boundaryList.add(new Rectangle(1216, 390, 156, 112));
+
+        //Block38
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block39
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block40
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block41
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block42
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block43
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block44
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block45
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block46
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
+        //Block47
+        boundaryList.add(new Rectangle(0, 0, 1, 1));
+
     }
 
     @Override
     public void start() {
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
-        c.put(spr, "FUNNY");
-        //c.put(block, "FUNNY2");
+        c.put(pacmanspr, "pacman");
+
+        for(int i = 0; i < pelletNumber; i++){
+            c.put(pelletList.get(i), "pellet" + i);
+
+        }
 
 
 
@@ -139,34 +212,36 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     public void update() {
 
         pacmanR = new Rectangle(x, y, width, height);
-        //blockR = new Rectangle(blockx, blocky, blockwidth, blockheight);
 
         //Pacman Movement
-        if(c.getKeysDown().contains('s') && !blockCollideTestY(true)){
+        if(c.getKeysDown().contains('s') && blockCollideTestY(true)){
             y = y + speed;
             //spr.setImage(down);
-        } else if(c.getKeysDown().contains('w') && !blockCollideTestY(false)){
+        } else if(c.getKeysDown().contains('w') && blockCollideTestY(false)){
             y = y - speed;
             //spr.setImage(up);
-        } else if(c.getKeysDown().contains('d') && !blockCollideTestX(true)){
+        } else if(c.getKeysDown().contains('d') && blockCollideTestX(true)){
             x = x + speed;
             //spr.setImage(right);
-        } else if(c.getKeysDown().contains('a') && !blockCollideTestX(false)){
+        } else if(c.getKeysDown().contains('a') && blockCollideTestX(false)){
             x = x - speed;
             //spr.setImage(left);
-        } //else if(!c.getKeysDown().contains('a')&&!c.getKeysDown().contains('d')&&!c.getKeysDown().contains('s')&&!c.getKeysDown().contains('w')){
-            //spr.setImage(neutral);
+        }
 
-        //}
+        for(int i = 0; i < pelletNumber; i++){
 
-        spr.setX((int) x);
-        spr.setY((int) y);
+            pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
+            //if(pacmanR.intersects(pelletR) && pelletList.get(i).isVisible()){
 
-        //For debugging and setting coordinate positions
-        //Point p = MouseInfo.getPointerInfo().getLocation();
-        //p.translate(459, 263);
-        //System.out.println(p.getLocation());
-        //System.out.println(x + " " + y);
+                pelletList.get(i).setVisible(false);
+
+            //}
+
+        }
+
+
+        pacmanspr.setX(x);
+        pacmanspr.setY(y);
 
 
     }
@@ -176,8 +251,6 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         Rectangle pacmanXT = new Rectangle(x+speed, y, width, height);
         Rectangle pacmanXF = new Rectangle(x-speed, y, width, height);
-        //Rectangle pacmanXT1 = new Rectangle(x+1, y, width, height);
-        //Rectangle pacmanXF1 = new Rectangle(x-1, y, width, height);
 
         //True direction is up and false is down
         return Collision(direction, pacmanXT, pacmanXF);
@@ -193,30 +266,28 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         return Collision(direction, pacmanYT, pacmanYF);
     }
 
-    private boolean Collision(boolean direction, Rectangle pacmanXT, Rectangle pacmanXF) {
+    private boolean Collision(boolean direction, Rectangle pacmanT, Rectangle pacmanF) {
         if(direction){
-            if (Rectangle(pacmanXT)) return true;
+            return Boundary(pacmanT);
 
         }else {
 
-            if (Rectangle(pacmanXF)) return true;
+            return Boundary(pacmanF);
         }
-
-        return false;
     }
 
-    private boolean Rectangle(Rectangle pacmanXT) {
-        if(pacmanXT.intersects(block1R)||pacmanXT.intersects(block2R)||pacmanXT.intersects(block3R)
-                ||pacmanXT.intersects(block4R)||pacmanXT.intersects(block5R)||pacmanXT.intersects(block6R)
-                ||pacmanXT.intersects(block7R)||pacmanXT.intersects(block8R)||pacmanXT.intersects(block9R)
-                ||pacmanXT.intersects(block10R)||pacmanXT.intersects(block12R)||pacmanXT.intersects(block13R)
-                ||pacmanXT.intersects(block14R)||pacmanXT.intersects(block15R)||pacmanXT.intersects(block16R)
-                ||pacmanXT.intersects(block17R) ||pacmanXT.intersects(block18R)){
+    private boolean Boundary(Rectangle pacman) {
 
+        for (Rectangle rectangle : boundaryList) {
 
-            return true;
+            if (pacman.intersects(rectangle)) {
+
+                return false;
+
+            }
         }
-        return false;
+
+        return true;
     }
 
 
