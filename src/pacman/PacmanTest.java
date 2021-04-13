@@ -5,6 +5,7 @@ import engine.GameElement;
 import engine.Sprite;
 //import engine.SpriteClickable;
 //import org.w3c.dom.css.Rect;
+import engine.SpriteText;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -18,16 +19,18 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite boardspr;
     Sprite pacmanspr;
     Sprite redspr;
+    SpriteText scorespr;
     Canvas c;
 
 
     //Pacman vars
-    int x = 935;
-    int y = 590;
+    int x = 940;
+    int y = 765;
     int speed = 2;
     int width = 45;
     int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
+    int score = 0;
 
     //Blinky (red)
     int redx = 950;
@@ -40,10 +43,27 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Rectangle redR = new Rectangle(redx, redy, redWidth, redHeight);
 
     //Pellets
-    int pelletNumber1 = 5;
-    int pelletNumber2 = 5;
-    int pelletNumber = pelletNumber1 + pelletNumber2;
-    int pelletSize = 50;
+    int pelletNumberH1 = 24;
+    int pelletNumberH2 = 26;
+    int pelletNumberH3 = 20;
+    int pelletNumberH4 = 24;
+    int pelletNumberH5 = 18;
+    int pelletNumberH6 = 20;
+    int pelletNumberH7 = 26;
+    int pelletNumberV1 = 8;
+    int pelletNumberV2 = 2;
+    int pelletNumberV3 = 20;
+    int pelletNumberV4 = 4;
+    int pelletNumberV5 = 7;
+    int pelletNumberV6 = 7;
+    int pelletNumberV7 = 4;
+    int pelletNumberV8 = 20;
+    int pelletNumberV9 = 2;
+    int pelletNumberV10 = 8;
+    int pelletNumber = 240;
+    int pelletSize = 10;
+    int pelletDistanceX = 30;
+    int pelletDistanceY = 28;
     Rectangle pelletR;
     ArrayList<Sprite> pelletList = new ArrayList<>();
 
@@ -55,7 +75,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     BufferedImage neutral = ResourceLoader.getImage("pacman/circle.png");
     BufferedImage background = ResourceLoader.getImage("pacman/background.png");
     BufferedImage board = ResourceLoader.getImage("pacman/board.png");
-
+    BufferedImage pellet = ResourceLoader.getImage("pacman/pellet.png");
 
 
     public PacmanTest(Canvas c) {
@@ -67,6 +87,10 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Board
         boardspr = new Sprite(board, 540, 116, 840, 887, 1);
 
+        //Score
+        scorespr = new SpriteText(924, 80, 200, 200, 2);
+        scorespr.setText(""+score, Color.lightGray, 2);
+
         //Pacman
         pacmanspr = new Sprite(neutral, x, y, width, height, 2);
 
@@ -74,18 +98,117 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 2);
 
         //Pellets
-        for(int i = 0; i < pelletNumber1; i++){
+        //Horizontal Lines always take precedence over vertical lines
+        //H1 and V1 both start at the top left corner
+        //Horizontal Line 1
+        for(int i = 0; i < pelletNumberH1+2; i++){
 
-            pelletList.add(new Sprite(neutral, 100 * i, 300, 45, 45, 2));
+            if(i != 12 && i != 13)
+            pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 165, pelletSize, pelletSize, 2));
+
+        }
+        //Horizontal Line 2
+        for(int i = 0; i < pelletNumberH2; i++){
+
+            pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 279, pelletSize, pelletSize, 2));
+
+        }
+        //Horizontal Line 3
+        for(int i = 0; i < pelletNumberH3+6; i++){
+
+            if(i != 6 && i != 7 && i != 12 && i != 13 && i != 18 && i!= 19) {
+                pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 360, pelletSize, pelletSize, 2));
+            }
+        }
+        //Horizontal Line 4
+        for(int i = 0; i < pelletNumberH4+2; i++){
+
+            if(i != 12 && i != 13) {
+                pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 699, pelletSize, pelletSize, 2));
+            }
+        }
+        //Horizontal Line 5
+        for(int i = 0; i < pelletNumberH5+8; i++){
+
+            if(i != 0 && i != 3 && i != 4 && i != 12 && i != 13 && i != 21 && i != 22 && i != 25) {
+                pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 783, pelletSize, pelletSize, 2));
+            }
+        }
+        //Horizontal Line 6
+        for(int i = 0; i < pelletNumberH6+6; i++){
+
+            if(i != 6 && i != 7 && i != 12 && i != 13 && i != 18 && i!= 19) {
+                pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 867, pelletSize, pelletSize, 2));
+            }
+        }
+        //Horizontal Line 7
+        for(int i = 0; i < pelletNumberH7; i++){
+
+                pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 948, pelletSize, pelletSize, 2));
 
         }
 
-        for(int i = 0; i < pelletNumber2; i++){
 
-            pelletList.add(new Sprite(neutral, 500, 100 * i, 45, 45, 2));
+        //Vertical Line 1
+        for(int i = 0; i < pelletNumberV1+21; i++){
+            if(i == 1 || i == 3 || i == 5 || i == 6 || i == 27 || i == 26 || i == 21 || i == 20) {
+                pelletList.add(new Sprite(pellet, 585, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 2
+        for(int i = 0; i < pelletNumberV2+27; i++){
+            if(i == 24 || i == 23) {
+                pelletList.add(new Sprite(pellet, 645, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 3
+        for(int i = 0; i < pelletNumberV3+9; i++){
+            if(i != 0 && i != 4 && i != 7 && i != 19 && i != 22 && i != 25 && i != 26 && i != 27 && i != 28)
+            pelletList.add(new Sprite(pellet, 735, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
 
         }
+        //Vertical Line 4
+        for(int i = 0; i < pelletNumberV4+25; i++){
+            if(i == 5 || i == 6 || i == 23 || i == 24) {
+                pelletList.add(new Sprite(pellet, 825, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 5
+        for(int i = 0; i < pelletNumberV5+22; i++){
+            if(i == 1 || i == 2 || i == 3 || i == 27 || i == 26 || i == 21 || i == 20) {
+                pelletList.add(new Sprite(pellet, 915, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 6
+        for(int i = 0; i < pelletNumberV6+22; i++){
+            if(i == 1 || i == 2 || i == 3 || i == 27 || i == 26 || i == 21 || i == 20) {
+                pelletList.add(new Sprite(pellet, 1005, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 7
+        for(int i = 0; i < pelletNumberV7+25; i++){
+            if(i == 5 || i == 6 || i == 23 || i == 24) {
+                pelletList.add(new Sprite(pellet, 1095, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 8
+        for(int i = 0; i < pelletNumberV8+9; i++){
+            if(i != 0 && i != 4 && i != 7 && i != 19 && i != 22 && i != 25 && i != 26 && i != 27 && i != 28)
+                pelletList.add(new Sprite(pellet, 1185, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
 
+        }
+        //Vertical Line 9
+        for(int i = 0; i < pelletNumberV9+27; i++){
+            if(i == 24 || i == 23) {
+                pelletList.add(new Sprite(pellet, 1275, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
+        //Vertical Line 10
+        for(int i = 0; i < pelletNumberV10+21; i++){
+            if(i == 1 || i == 3 || i == 5 || i == 6 || i == 27 || i == 26 || i == 21 || i == 20) {
+                pelletList.add(new Sprite(pellet, 1335, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
+            }
+        }
 
         //Boundaries
         //Block1
@@ -144,60 +267,40 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         boundaryList.add(new Rectangle(1216, 732, 28, 114));
         //Block29
         boundaryList.add(new Rectangle(1244, 732, 52, 28));
-
-
-
         //Block30
         boundaryList.add(new Rectangle(948, 138, 28, 110));
-
         //Block31
         boundaryList.add(new Rectangle(562, 818, 58, 28));
-
         //Block32
         boundaryList.add(new Rectangle(1302, 818, 58, 28));
-
         //Block33
         boundaryList.add(new Rectangle(550, 390, 158, 112));
-
         //Block34
         boundaryList.add(new Rectangle(550, 126, 12, 264));
-
         //Block35
         boundaryList.add(new Rectangle(562, 126, 798, 12));
-
         //Block36
         boundaryList.add(new Rectangle(1360, 126, 12, 264));
-
         //Block37
         boundaryList.add(new Rectangle(1216, 390, 156, 112));
-
         //Block38
         boundaryList.add(new Rectangle(1216, 563, 156, 112));
-
         //Block39
         boundaryList.add(new Rectangle(1360, 670, 12, 326));
-
         //Block40
         boundaryList.add(new Rectangle(562, 984, 798, 12));
-
         //Block41
         boundaryList.add(new Rectangle(550, 670, 12, 326));
-
         //Block42
         boundaryList.add(new Rectangle(550, 563, 158, 112));
-
         //Block43
         boundaryList.add(new Rectangle(992, 478, 62, 12));
-
         //Block44
         boundaryList.add(new Rectangle(1052, 478, 12, 108));
-
         //Block45
         boundaryList.add(new Rectangle(872, 574, 180, 12));
-
         //Block46
         boundaryList.add(new Rectangle(860, 478, 12, 108));
-
         //Block47
         boundaryList.add(new Rectangle(872, 478, 62, 12));
 
@@ -207,6 +310,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     public void start() {
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
+        c.put(scorespr, "score");
         c.put(pacmanspr, "pacman");
         c.put(redspr, "Blinky");
 
@@ -268,17 +372,21 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         for(int i = 0; i < pelletNumber; i++){
 
             pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
-            //if(pacmanR.intersects(pelletR) && pelletList.get(i).isVisible()){
+            if(pacmanR.intersects(pelletR) && pelletList.get(i).isVisible()){
 
                 pelletList.get(i).setVisible(false);
+                score = score + 10;
 
-            //}
+            }
 
         }
 
         //Pacman coordinates update
         pacmanspr.setX(x);
         pacmanspr.setY(y);
+
+        //Update Score
+        scorespr.setText(""+score, Color.lightGray, 2);
 
         //Blinky coordinates update
         //redspr.setX(redx);
