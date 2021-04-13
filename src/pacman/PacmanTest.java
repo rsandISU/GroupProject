@@ -4,6 +4,7 @@ import engine.Canvas;
 import engine.GameElement;
 import engine.Sprite;
 //import engine.SpriteClickable;
+//import org.w3c.dom.css.Rect;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -16,6 +17,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite backgroundspr;
     Sprite boardspr;
     Sprite pacmanspr;
+    Sprite redspr;
     Canvas c;
 
 
@@ -26,6 +28,16 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int width = 45;
     int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
+
+    //Blinky (red)
+    int redx = 950;
+    int redy = 525;
+    int redSpeed = 1;
+    String redxDirection = "right";
+    String redyDirection = "down";
+    int redWidth = 45;
+    int redHeight = 45;
+    Rectangle redR = new Rectangle(redx, redy, redWidth, redHeight);
 
     //Pellets
     int pelletNumber1 = 5;
@@ -57,6 +69,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         //Pacman
         pacmanspr = new Sprite(neutral, x, y, width, height, 2);
+
+        //Blinky (red)
+        redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 2);
 
         //Pellets
         for(int i = 0; i < pelletNumber1; i++){
@@ -133,13 +148,13 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Block30
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(948, 138, 28, 110));
 
         //Block31
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(562, 818, 58, 28));
 
         //Block32
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(1302, 818, 58, 28));
 
         //Block33
         boundaryList.add(new Rectangle(550, 390, 158, 112));
@@ -157,34 +172,34 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         boundaryList.add(new Rectangle(1216, 390, 156, 112));
 
         //Block38
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(1216, 563, 156, 112));
 
         //Block39
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(1360, 670, 12, 326));
 
         //Block40
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(562, 984, 798, 12));
 
         //Block41
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(550, 670, 12, 326));
 
         //Block42
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(550, 563, 158, 112));
 
         //Block43
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(992, 478, 62, 12));
 
         //Block44
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(1052, 478, 12, 108));
 
         //Block45
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(872, 574, 180, 12));
 
         //Block46
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(860, 478, 12, 108));
 
         //Block47
-        boundaryList.add(new Rectangle(0, 0, 1, 1));
+        boundaryList.add(new Rectangle(872, 478, 62, 12));
 
     }
 
@@ -193,6 +208,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
         c.put(pacmanspr, "pacman");
+        c.put(redspr, "Blinky");
 
         for(int i = 0; i < pelletNumber; i++){
             c.put(pelletList.get(i), "pellet" + i);
@@ -213,21 +229,42 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         pacmanR = new Rectangle(x, y, width, height);
 
+        redR = new Rectangle(redx, redy, redWidth, redHeight);
+
         //Pacman Movement
-        if(c.getKeysDown().contains('s') && blockCollideTestY(true)){
+        if(c.getKeysDown().contains('s') && blockCollideTestY(true, "pacman")){
             y = y + speed;
             //spr.setImage(down);
-        } else if(c.getKeysDown().contains('w') && blockCollideTestY(false)){
+        } else if(c.getKeysDown().contains('w') && blockCollideTestY(false, "pacman")){
             y = y - speed;
             //spr.setImage(up);
-        } else if(c.getKeysDown().contains('d') && blockCollideTestX(true)){
+        } else if(c.getKeysDown().contains('d') && blockCollideTestX(true, "pacman")){
             x = x + speed;
             //spr.setImage(right);
-        } else if(c.getKeysDown().contains('a') && blockCollideTestX(false)){
+        } else if(c.getKeysDown().contains('a') && blockCollideTestX(false, "pacman")){
             x = x - speed;
             //spr.setImage(left);
         }
 
+
+        //Blinky movement
+        if(blinkyDirection().equals("down") && blockCollideTestY(true, "blinky")){
+            redy = redy + redSpeed;
+            //spr.setImage(down);
+        } else if(blinkyDirection().equals("up") && blockCollideTestY(false, "blinky")){
+            redy = redy - redSpeed;
+            //spr.setImage(up);
+        } else if(blinkyDirection().equals("right") && blockCollideTestX(true, "blinky")){
+            redx = redx + redSpeed;
+            //spr.setImage(right);
+        } else if(blinkyDirection().equals("left") && blockCollideTestX(false, "blinky")){
+            redx = redx - redSpeed;
+            //spr.setImage(left);
+        }
+
+
+
+        //Pellets
         for(int i = 0; i < pelletNumber; i++){
 
             pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
@@ -239,48 +276,144 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }
 
-
+        //Pacman coordinates update
         pacmanspr.setX(x);
         pacmanspr.setY(y);
 
+        //Blinky coordinates update
+        //redspr.setX(redx);
+        //redspr.setY(redy);
+
 
     }
 
-    //Returns true if pacman can't move without colliding in the desired x direction
-    public boolean blockCollideTestX(boolean direction){
 
-        Rectangle pacmanXT = new Rectangle(x+speed, y, width, height);
-        Rectangle pacmanXF = new Rectangle(x-speed, y, width, height);
+    //Blinky Direction deciding method
+    public String blinkyDirection(){
+
+        int xDifference = Math.abs(x-redx);
+        int yDifference = Math.abs(y-redy);
+
+        //If farther up/down than left/right
+        if(yDifference > xDifference){
+            //Down check
+            if(redy < y - redSpeed && blockCollideTestY(true, "blinky")){
+                return "down";
+            }else if(redxDirection.equals("right") && blockCollideTestX(true, "blinky")){
+                return "right";
+            }else if(blockCollideTestX(false, "blinky")){
+                redxDirection = "left";
+                return "left";
+            }else if(blockCollideTestY(false, "blinky")){
+                redxDirection = "right";
+                return "up";
+
+            }
+
+            //Up check
+            if(redy > y + redSpeed && blockCollideTestY(false, "blinky")){
+                return "up";
+            }else if(redxDirection.equals("right") && blockCollideTestX(true, "blinky")){
+                return "right";
+            }else if(blockCollideTestX(false, "blinky")){
+                redxDirection = "left";
+                return "left";
+            }else if(blockCollideTestY(true, "blinky")){
+                redxDirection = "right";
+                return "down";
+
+            }
+        } else if(xDifference > yDifference){
+
+            //Right check
+            if(redx < x - redSpeed && blockCollideTestX(true, "blinky")){
+                return "right";
+            }else if(redyDirection.equals("down") && blockCollideTestY(true, "blinky")) {
+                return "down";
+            }else if(blockCollideTestY(false, "blinky")){
+                redyDirection = "up";
+                return "up";
+            }else if(blockCollideTestX(false, "blinky")){
+                redyDirection = "down";
+                return "left";
+            }
+
+            //Left check
+            if(redx > x + redSpeed && blockCollideTestX(false, "blinky")){
+                return "left";
+            }else if(redyDirection.equals("down") && blockCollideTestY(true, "blinky")) {
+                return "down";
+            }else if(blockCollideTestY(false, "blinky")){
+                redyDirection = "up";
+                return "up";
+            }else if(blockCollideTestX(true, "blinky")){
+                redyDirection = "down";
+                return "right";
+            }
+        }
+
+        return "ERROR";
+
+    }
+
+
+
+
+    //Returns true if pacman/ghost can't move without colliding in the desired x direction
+    public boolean blockCollideTestX(boolean direction, String name){
+
+        Rectangle XT = new Rectangle();
+        Rectangle XF = new Rectangle();
+
+        if(name.equals("pacman")) {
+            XT = new Rectangle(x + speed, y, width, height);
+            XF = new Rectangle(x - speed, y, width, height);
+        }
+
+        if(name.equals("blinky")) {
+            XT = new Rectangle(redx + redSpeed, redy, redWidth, redHeight);
+            XF = new Rectangle(redx - redSpeed, redy, redWidth, redHeight);
+        }
 
         //True direction is up and false is down
-        return Collision(direction, pacmanXT, pacmanXF);
+        return Collision(direction, XT, XF);
     }
 
-    //Returns true if pacman can't move without colliding in the desired y direction
-    public boolean blockCollideTestY(boolean direction){
+    //Returns true if pacman/ghost can't move without colliding in the desired y direction
+    public boolean blockCollideTestY(boolean direction, String name){
 
-        Rectangle pacmanYT = new Rectangle(x, y+speed, width, height);
-        Rectangle pacmanYF = new Rectangle(x, y-speed, width, height);
+        Rectangle YT = new Rectangle();
+        Rectangle YF = new Rectangle();
+
+        if(name.equals("pacman")) {
+            YT = new Rectangle(x, y + speed, width, height);
+            YF = new Rectangle(x, y - speed, width, height);
+        }
+
+        if(name.equals("blinky")) {
+            YT = new Rectangle(redx, redy  + redSpeed, redWidth, redHeight);
+            YF = new Rectangle(redx, redy - redSpeed, redWidth, redHeight);
+        }
 
         //True direction is up and false is down
-        return Collision(direction, pacmanYT, pacmanYF);
+        return Collision(direction, YT, YF);
     }
 
-    private boolean Collision(boolean direction, Rectangle pacmanT, Rectangle pacmanF) {
+    private boolean Collision(boolean direction, Rectangle T, Rectangle F) {
         if(direction){
-            return Boundary(pacmanT);
+            return Boundary(T);
 
         }else {
 
-            return Boundary(pacmanF);
+            return Boundary(F);
         }
     }
 
-    private boolean Boundary(Rectangle pacman) {
+    private boolean Boundary(Rectangle pacOrGhost) {
 
         for (Rectangle rectangle : boundaryList) {
 
-            if (pacman.intersects(rectangle)) {
+            if (pacOrGhost.intersects(rectangle)) {
 
                 return false;
 
