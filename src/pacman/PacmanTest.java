@@ -12,6 +12,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Random;
 //import java.awt.Point;
 
 public class PacmanTest implements GameElement, MouseMotionListener {
@@ -19,6 +20,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite boardspr;
     Sprite pacmanspr;
     Sprite redspr;
+    Sprite doorspr;
     SpriteText scorespr;
     Canvas c;
 
@@ -36,13 +38,17 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int redx = 950;
     int redy = 525;
     int redSpeed = 1;
-    String redxDirection = "right";
-    String redyDirection = "down";
+    String redLastDirection = "left";
+    String redLastLockDirection = "lockleft";
+    String redLastLockDirection2 = "lockup";
+    Random rand = new Random(123);
+    int redCounter = 0;
     int redWidth = 45;
     int redHeight = 45;
     Rectangle redR = new Rectangle(redx, redy, redWidth, redHeight);
+    int redCoolDown = 400;
 
-    //Pellets
+    //region Pellet variables
     int pelletNumberH1 = 24;
     int pelletNumberH2 = 26;
     int pelletNumberH3 = 20;
@@ -66,9 +72,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     int pelletDistanceY = 28;
     Rectangle pelletR;
     ArrayList<Sprite> pelletList = new ArrayList<>();
+    //endregion
 
     //Boundaries
-
     ArrayList<Rectangle> boundaryList = new ArrayList<>();
 
     //Put buffered images here
@@ -76,6 +82,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     BufferedImage background = ResourceLoader.getImage("pacman/background.png");
     BufferedImage board = ResourceLoader.getImage("pacman/board.png");
     BufferedImage pellet = ResourceLoader.getImage("pacman/pellet.png");
+    BufferedImage door = ResourceLoader.getImage("pacman/door.png");
 
 
     public PacmanTest(Canvas c) {
@@ -87,6 +94,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Board
         boardspr = new Sprite(board, 540, 116, 840, 887, 1);
 
+        //Door
+        doorspr = new Sprite(door, 934, 482, 56, 8, 2);
+
         //Score
         scorespr = new SpriteText(924, 80, 200, 200, 2);
         scorespr.setText(""+score, Color.lightGray, 2);
@@ -95,9 +105,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         pacmanspr = new Sprite(neutral, x, y, width, height, 2);
 
         //Blinky (red)
-        redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 2);
+        redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 3);
 
-        //Pellets
+        //region Pellets
         //Horizontal Lines always take precedence over vertical lines
         //H1 and V1 both start at the top left corner
         //Horizontal Line 1
@@ -209,8 +219,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                 pelletList.add(new Sprite(pellet, 1335, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
+        //endregion
 
-        //Boundaries
+        //region Boundaries
         //Block1
         boundaryList.add(new Rectangle(628, 196, 80, 52));
         //Block2
@@ -302,7 +313,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Block46
         boundaryList.add(new Rectangle(860, 478, 12, 108));
         //Block47
-        boundaryList.add(new Rectangle(872, 478, 62, 12));
+        boundaryList.add(new Rectangle(872, 478, 62 + 56, 12));
+        //endregion
 
     }
 
@@ -311,6 +323,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
         c.put(scorespr, "score");
+        c.put(doorspr, "door");
         c.put(pacmanspr, "pacman");
         c.put(redspr, "Blinky");
 
@@ -352,21 +365,17 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Blinky movement
-        if(blinkyDirection().equals("down") && blockCollideTestY(true, "blinky")){
-            redy = redy + redSpeed;
-            //spr.setImage(down);
-        } else if(blinkyDirection().equals("up") && blockCollideTestY(false, "blinky")){
-            redy = redy - redSpeed;
-            //spr.setImage(up);
-        } else if(blinkyDirection().equals("right") && blockCollideTestX(true, "blinky")){
-            redx = redx + redSpeed;
-            //spr.setImage(right);
-        } else if(blinkyDirection().equals("left") && blockCollideTestX(false, "blinky")){
-            redx = redx - redSpeed;
-            //spr.setImage(left);
+        if(redCoolDown > 0){
+            redCoolDown = redCoolDown -1;
         }
-
-
+        if(redCoolDown == 0){
+            if(redx > 942) redx = redx -1;
+            else if(redx < 942) redx = redx + 1;
+            else if(redy > 424) redy = redy - 1;
+            else if(redy < 424) redy = redy + 1;
+            else redCoolDown = -1;
+        }
+        if(redCoolDown == -1) redLastDirection = blinkyMove(redLastDirection);
 
         //Pellets
         for(int i = 0; i < pelletNumber; i++){
@@ -389,78 +398,330 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         scorespr.setText(""+score, Color.lightGray, 2);
 
         //Blinky coordinates update
-        //redspr.setX(redx);
-        //redspr.setY(redy);
+        redspr.setX(redx);
+        redspr.setY(redy);
 
 
     }
 
 
     //Blinky Direction deciding method
-    public String blinkyDirection(){
+    public String blinkyMove(String lastDirection){
 
         int xDifference = Math.abs(x-redx);
         int yDifference = Math.abs(y-redy);
+        int lockNumber = 160;
+        int randomDirection = rand.nextInt(2);
 
-        //If farther up/down than left/right
-        if(yDifference > xDifference){
-            //Down check
-            if(redy < y - redSpeed && blockCollideTestY(true, "blinky")){
+        //Lockdown
+        if(lastDirection.equals("lockdown") && redCounter < lockNumber){
+
+            if(redCounter == lockNumber-1){
+                redCounter = 0;
+                redLastLockDirection2 = redLastLockDirection;
+                redLastLockDirection = "lockdown";
                 return "down";
-            }else if(redxDirection.equals("right") && blockCollideTestX(true, "blinky")){
-                return "right";
-            }else if(blockCollideTestX(false, "blinky")){
-                redxDirection = "left";
-                return "left";
-            }else if(blockCollideTestY(false, "blinky")){
-                redxDirection = "right";
-                return "up";
+            }
+            redCounter = redCounter + 1;
 
+
+            if(redx < x && blockCollideTestX(true, "blinky")) {
+                redx = redx + redSpeed;
+                redCounter = 0;
+                return "right";
+            } else if(redx > x && blockCollideTestX(false, "blinky")){
+                redx = redx - redSpeed;
+                redCounter = 0;
+                return "left";
+
+            } else if(blockCollideTestY(true, "blinky")) {
+                redy = redy + redSpeed;
+                return "lockdown";
             }
 
-            //Up check
-            if(redy > y + redSpeed && blockCollideTestY(false, "blinky")){
-                return "up";
-            }else if(redxDirection.equals("right") && blockCollideTestX(true, "blinky")){
-                return "right";
-            }else if(blockCollideTestX(false, "blinky")){
-                redxDirection = "left";
-                return "left";
-            }else if(blockCollideTestY(true, "blinky")){
-                redxDirection = "right";
-                return "down";
+        }
 
+        //Lockup
+        if(lastDirection.equals("lockup") && redCounter < lockNumber){
+
+            if(redCounter == lockNumber-1){
+                redCounter = 0;
+                redLastLockDirection2 = redLastLockDirection;
+                redLastLockDirection = "lockup";
+                return "up";
             }
-        } else if(xDifference > yDifference){
+            redCounter = redCounter + 1;
 
-            //Right check
-            if(redx < x - redSpeed && blockCollideTestX(true, "blinky")){
+            if(redx < x && blockCollideTestX(true, "blinky")) {
+                redx = redx + redSpeed;
+                redCounter = 0;
                 return "right";
-            }else if(redyDirection.equals("down") && blockCollideTestY(true, "blinky")) {
-                return "down";
-            }else if(blockCollideTestY(false, "blinky")){
-                redyDirection = "up";
-                return "up";
-            }else if(blockCollideTestX(false, "blinky")){
-                redyDirection = "down";
+            } else if(redx > x && blockCollideTestX(false, "blinky")){
+                redx = redx - redSpeed;
+                redCounter = 0;
                 return "left";
+
+            } else if(blockCollideTestY(false, "blinky")){
+                redy = redy - redSpeed;
+                return "lockup";
             }
 
-            //Left check
-            if(redx > x + redSpeed && blockCollideTestX(false, "blinky")){
-                return "left";
-            }else if(redyDirection.equals("down") && blockCollideTestY(true, "blinky")) {
-                return "down";
-            }else if(blockCollideTestY(false, "blinky")){
-                redyDirection = "up";
-                return "up";
-            }else if(blockCollideTestX(true, "blinky")){
-                redyDirection = "down";
+        }
+
+        //Lockright
+        if(lastDirection.equals("lockright") && redCounter < lockNumber){
+
+            if(redCounter == lockNumber-1){
+                redCounter = 0;
+                redLastLockDirection2 = redLastLockDirection;
+                redLastLockDirection = "lockright";
                 return "right";
+            }
+            redCounter = redCounter + 1;
+
+            if(redy < y && blockCollideTestY(true, "blinky")) {
+                redy = redy + redSpeed;
+                redCounter = 0;
+                return "down";
+            } else if(redy > y && blockCollideTestY(false, "blinky")){
+                redy = redy - redSpeed;
+                redCounter = 0;
+                return "up";
+
+            } else if(blockCollideTestX(true, "blinky")){
+                redx = redx + redSpeed;
+                return "lockright";
+            }
+
+        }
+
+        //Lockleft
+        if(lastDirection.equals("lockleft") && redCounter < lockNumber){
+
+            if(redCounter == lockNumber-1){
+                redCounter = 0;
+                redLastLockDirection2 = redLastLockDirection;
+                redLastLockDirection = "lockleft";
+                return "left";
+            }
+            redCounter = redCounter + 1;
+
+            if(redy < y && blockCollideTestY(true, "blinky")) {
+                redy = redy + redSpeed;
+                redCounter = 0;
+                return "down";
+            } else if(redy > y && blockCollideTestY(false, "blinky")){
+                redy = redy - redSpeed;
+                redCounter = 0;
+                return "up";
+
+            } else if(blockCollideTestX(false, "blinky")) {
+                redx = redx - redSpeed;
+                return "lockleft";
+            }
+
+        }
+
+        //Down
+        if(yDifference > xDifference && redy < y){
+
+            if(blockCollideTestY(true, "blinky")) {
+                redy = redy + redSpeed;
+                return "down";
+            }else if(redx < x) {
+
+                if (blockCollideTestX(true, "blinky")) {
+                    redx = redx + redSpeed;
+                    return "right";
+                } else {
+                    if(randomDirection == 0) return "lockleft";
+                    else return "lockup";
+                }
+            }else if(redx > x) {
+
+                if (blockCollideTestX(false, "blinky")) {
+                    redx = redx - redSpeed;
+                    return "left";
+                }else {
+                    if(randomDirection == 0) return "lockright";
+                    else return "lockup";
+                }
+            }else{
+                if(randomDirection == 0) return "lockright";
+                else return "lockleft";
+            }
+        }
+        //Up
+        else if(yDifference > xDifference && redy > y){
+
+            if(blockCollideTestY(false, "blinky")){
+                redy = redy - redSpeed;
+                return "up";
+            }else if(redx < x) {
+
+                if (blockCollideTestX(true, "blinky")) {
+                    redx = redx + redSpeed;
+                    return "right";
+                } else {
+                    if(randomDirection == 0) return "lockdown";
+                    else return "lockleft";
+                }
+            }else if(redx > x) {
+
+                if (blockCollideTestX(false, "blinky")) {
+                    redx = redx - redSpeed;
+                    return "left";
+                } else {
+                    if(randomDirection == 0) return "lockright";
+                    else return "lockdown";
+                }
+            }else{
+                if(randomDirection == 0) return "lockright";
+                else return "lockleft";
+            }
+
+        }
+        //Right
+        else if(xDifference > yDifference && redx < x){
+
+            if(blockCollideTestX(true, "blinky")){
+                redx = redx + redSpeed;
+                return "right";
+            }else if(redy < y) {
+
+                if (blockCollideTestY(true, "blinky")) {
+                    redy = redy + redSpeed;
+                    return "down";
+                } else {
+                    if(randomDirection == 0) return "lockup";
+                    else return "lockleft";
+                }
+            }else if(redy > y) {
+
+                if (blockCollideTestY(false, "blinky")) {
+                    redy = redy - redSpeed;
+                    return "up";
+                } else {
+                    if(randomDirection == 0) return "lockdown";
+                    else return "lockleft";
+                }
+            }else{
+                if(randomDirection == 0) return "lockdown";
+                else return "lockup";
+            }
+        }
+        //Left
+        else if(xDifference > yDifference && redx > x){
+
+            if(blockCollideTestX(false, "blinky")) {
+                redx = redx - redSpeed;
+                return "left";
+            }else if(redy < y) {
+
+                if (blockCollideTestY(true, "blinky")) {
+                    redy = redy + redSpeed;
+                    return "down";
+                } else {
+                    if(randomDirection == 0) return "lockright";
+                    else return "lockup";
+                }
+            }else if(redy > y) {
+
+                if (blockCollideTestY(false, "blinky")) {
+                    redy = redy - redSpeed;
+                    return "up";
+                } else {
+                    if(randomDirection == 0) return "lockright";
+                    else return "lockdown";
+                }
+            }else{
+                if(randomDirection == 0) return "lockdown";
+                else return "lockup";
+            }
+        }
+        //Down
+         else if(redy < y){
+
+            if(blockCollideTestY(true, "blinky")) {
+                redy = redy + redSpeed;
+                return "down";
+            }else if(redx < x) {
+
+                if (blockCollideTestX(true, "blinky")) {
+                    redx = redx + redSpeed;
+                    return "right";
+                }
+            }else if(redx > x) {
+
+                if (blockCollideTestX(false, "blinky")) {
+                    redx = redx - redSpeed;
+                    return "left";
+                }
+            }
+        }
+        //Up
+        else if(redy > y){
+
+            if(blockCollideTestY(false, "blinky")){
+                redy = redy - redSpeed;
+                return "up";
+            }else if(redx < x) {
+
+                if (blockCollideTestX(true, "blinky")) {
+                    redx = redx + redSpeed;
+                    return "right";
+                }
+            }else if(redx > x) {
+
+                if (blockCollideTestX(false, "blinky")) {
+                    redx = redx - redSpeed;
+                    return "left";
+                }
+            }
+
+        }
+        //Right
+        else if(redx < x){
+
+            if(blockCollideTestX(true, "blinky")){
+                redx = redx + redSpeed;
+                return "right";
+            }else if(redy < y) {
+
+                if (blockCollideTestY(true, "blinky")) {
+                    redy = redy + redSpeed;
+                    return "down";
+                }
+            }else if(redy > y) {
+
+                if (blockCollideTestY(false, "blinky")) {
+                    redy = redy - redSpeed;
+                    return "up";
+                }
+            }
+        }
+        //Left
+        else if(redx > x){
+
+            if(blockCollideTestX(false, "blinky")) {
+                redx = redx - redSpeed;
+                return "left";
+            }else if(redy < y) {
+
+                if (blockCollideTestY(true, "blinky")) {
+                    redy = redy + redSpeed;
+                    return "down";
+                }
+            }else if(redy > y) {
+
+                if (blockCollideTestY(false, "blinky")) {
+                    redy = redy - redSpeed;
+                    return "up";
+                }
             }
         }
 
-        return "ERROR";
+        return "left";
 
     }
 
@@ -530,10 +791,6 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         return true;
     }
-
-
-
-
 
     @Override
     public void mouseDragged(MouseEvent e) {
