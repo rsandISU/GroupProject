@@ -6,6 +6,8 @@ import engine.Sprite;
 //import engine.SpriteClickable;
 //import org.w3c.dom.css.Rect;
 import engine.SpriteText;
+import menu.HighScoreTable;
+import menu.ScoreEntry;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -22,26 +24,35 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Sprite redspr;
     Sprite doorspr;
     SpriteText scorespr;
+    SpriteText gameoverspr;
+    SpriteText namespr;
+    SpriteText inputspr;
     Canvas c;
 
+    //Game vars
+    int score = 0;
+    boolean game = true;
 
     //Pacman vars
     int x = 940;
     int y = 765;
-    int speed = 2;
+    int speed = 3;
     int width = 45;
     int height = 45;
     Rectangle pacmanR = new Rectangle(x, y, width, height);
-    int score = 0;
+
 
     //Blinky (red)
     int redx = 950;
     int redy = 525;
-    int redSpeed = 1;
+    int redSpeed = 2;
     String redLastDirection = "left";
     String redLastLockDirection = "lockleft";
     String redLastLockDirection2 = "lockup";
     Random rand = new Random(123);
+    int redTargetX = x;
+    int redTargetY = y;
+    String redTarget = "pacman";
     int redCounter = 0;
     int redWidth = 45;
     int redHeight = 45;
@@ -106,6 +117,15 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         //Blinky (red)
         redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 3);
+
+
+        //Game Over Sprites
+        namespr = new SpriteText(555, 800, 200, 200, 6);
+        namespr.setVisible(false);
+        inputspr = new SpriteText(924, 80, 200, 200, 6);
+        inputspr.setVisible(false);
+        gameoverspr = new SpriteText(595, 100, 500, 500, 6);
+        gameoverspr.setVisible(false);
 
         //region Pellets
         //Horizontal Lines always take precedence over vertical lines
@@ -323,6 +343,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
         c.put(scorespr, "score");
+        c.put(namespr, "name");
+        c.put(gameoverspr, "gameover");
+        c.put(inputspr, "inputname");
         c.put(doorspr, "door");
         c.put(pacmanspr, "pacman");
         c.put(redspr, "Blinky");
@@ -377,7 +400,46 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         }
         if(redCoolDown == -1) redLastDirection = blinkyMove(redLastDirection);
 
-        //Pellets
+
+        //Wrapping
+        //Pacman
+        //Left to right
+        if(x < 540){
+
+            if(Math.abs(redx - x) < 300 && Math.abs(redy - y) < 200 && redTarget.equals("pacman")){
+                redTarget = "leftwrap";
+                redTargetX = 538;
+                redTargetY = 512;
+            }
+            x = 1340;
+        }
+        //Right to left
+        if(x > 1340){
+
+            if(Math.abs(redx - x) < 300 && Math.abs(redy - y) < 200 && redTarget.equals("pacman")){
+                redTarget = "rightwrap";
+                redTargetX = 1342;
+                redTargetY = 512;
+            }
+            x = 540;
+        }
+
+        //Blinky
+        //Left to right
+        if(redx < 540){
+            redx = 1340;
+            if(redTarget.equals("leftwrap")) redTarget = "pacman";
+
+        }
+        //Right to left
+        if(redx > 1340) {
+            redx = 540;
+            if(redTarget.equals("rightwrap")) redTarget = "pacman";
+        }
+
+
+
+            //Pellets
         for(int i = 0; i < pelletNumber; i++){
 
             pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
@@ -400,6 +462,32 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Blinky coordinates update
         redspr.setX(redx);
         redspr.setY(redy);
+        if(redTarget.equals("pacman")) redTargetX = x;
+        if(redTarget.equals("pacman")) redTargetY = y;
+
+
+        //GAME OVER
+        if(pacmanR.intersects(new Rectangle(redx, redy, redWidth, redHeight))){
+
+            game = false;
+
+            backgroundspr.setLayer(5);
+            gameoverspr.setText("GAME OVER", Color.lightGray, 7);
+            namespr.setText("Submit a name and press enter", Color.lightGray, 2.4);
+            namespr.setVisible(true);
+            inputspr.setVisible(true);
+            gameoverspr.setVisible(true);
+
+
+            if(c.getKeysDown().contains('a')) {
+                //ScoreEntry highScore = new ScoreEntry(score, "tst");
+                //HighScoreTable table = new HighScoreTable(0, c, menu)
+                //add(highScore);
+                c.setElement("MENU");
+            }
+
+        }
+
 
 
     }
@@ -408,8 +496,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     //Blinky Direction deciding method
     public String blinkyMove(String lastDirection){
 
-        int xDifference = Math.abs(x-redx);
-        int yDifference = Math.abs(y-redy);
+        int xDifference = Math.abs(redTargetX-redx);
+        int yDifference = Math.abs(redTargetY-redy);
         int lockNumber = 160;
         int randomDirection = rand.nextInt(2);
 
@@ -425,11 +513,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             redCounter = redCounter + 1;
 
 
-            if(redx < x && blockCollideTestX(true, "blinky")) {
+            if(redx < redTargetX && blockCollideTestX(true, "blinky")) {
                 redx = redx + redSpeed;
                 redCounter = 0;
                 return "right";
-            } else if(redx > x && blockCollideTestX(false, "blinky")){
+            } else if(redx > redTargetX && blockCollideTestX(false, "blinky")){
                 redx = redx - redSpeed;
                 redCounter = 0;
                 return "left";
@@ -452,11 +540,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
             redCounter = redCounter + 1;
 
-            if(redx < x && blockCollideTestX(true, "blinky")) {
+            if(redx < redTargetX && blockCollideTestX(true, "blinky")) {
                 redx = redx + redSpeed;
                 redCounter = 0;
                 return "right";
-            } else if(redx > x && blockCollideTestX(false, "blinky")){
+            } else if(redx > redTargetX && blockCollideTestX(false, "blinky")){
                 redx = redx - redSpeed;
                 redCounter = 0;
                 return "left";
@@ -479,11 +567,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
             redCounter = redCounter + 1;
 
-            if(redy < y && blockCollideTestY(true, "blinky")) {
+            if(redy < redTargetY && blockCollideTestY(true, "blinky")) {
                 redy = redy + redSpeed;
                 redCounter = 0;
                 return "down";
-            } else if(redy > y && blockCollideTestY(false, "blinky")){
+            } else if(redy > redTargetY && blockCollideTestY(false, "blinky")){
                 redy = redy - redSpeed;
                 redCounter = 0;
                 return "up";
@@ -506,11 +594,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
             redCounter = redCounter + 1;
 
-            if(redy < y && blockCollideTestY(true, "blinky")) {
+            if(redy < redTargetY && blockCollideTestY(true, "blinky")) {
                 redy = redy + redSpeed;
                 redCounter = 0;
                 return "down";
-            } else if(redy > y && blockCollideTestY(false, "blinky")){
+            } else if(redy > redTargetY && blockCollideTestY(false, "blinky")){
                 redy = redy - redSpeed;
                 redCounter = 0;
                 return "up";
@@ -523,12 +611,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         }
 
         //Down
-        if(yDifference > xDifference && redy < y){
+        if(yDifference > xDifference && redy < redTargetY){
 
             if(blockCollideTestY(true, "blinky")) {
                 redy = redy + redSpeed;
                 return "down";
-            }else if(redx < x) {
+            }else if(redx < redTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
                     redx = redx + redSpeed;
@@ -537,7 +625,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                     if(randomDirection == 0) return "lockleft";
                     else return "lockup";
                 }
-            }else if(redx > x) {
+            }else if(redx > redTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
                     redx = redx - redSpeed;
@@ -552,12 +640,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Up
-        else if(yDifference > xDifference && redy > y){
+        else if(yDifference > xDifference && redy > redTargetY){
 
             if(blockCollideTestY(false, "blinky")){
                 redy = redy - redSpeed;
                 return "up";
-            }else if(redx < x) {
+            }else if(redx < redTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
                     redx = redx + redSpeed;
@@ -566,7 +654,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                     if(randomDirection == 0) return "lockdown";
                     else return "lockleft";
                 }
-            }else if(redx > x) {
+            }else if(redx > redTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
                     redx = redx - redSpeed;
@@ -582,12 +670,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }
         //Right
-        else if(xDifference > yDifference && redx < x){
+        else if(xDifference > yDifference && redx < redTargetX){
 
             if(blockCollideTestX(true, "blinky")){
                 redx = redx + redSpeed;
                 return "right";
-            }else if(redy < y) {
+            }else if(redy < redTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
                     redy = redy + redSpeed;
@@ -596,7 +684,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                     if(randomDirection == 0) return "lockup";
                     else return "lockleft";
                 }
-            }else if(redy > y) {
+            }else if(redy > redTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
                     redy = redy - redSpeed;
@@ -611,12 +699,12 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Left
-        else if(xDifference > yDifference && redx > x){
+        else if(xDifference > yDifference && redx > redTargetX){
 
             if(blockCollideTestX(false, "blinky")) {
                 redx = redx - redSpeed;
                 return "left";
-            }else if(redy < y) {
+            }else if(redy < redTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
                     redy = redy + redSpeed;
@@ -625,7 +713,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                     if(randomDirection == 0) return "lockright";
                     else return "lockup";
                 }
-            }else if(redy > y) {
+            }else if(redy > redTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
                     redy = redy - redSpeed;
@@ -640,18 +728,18 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Down
-         else if(redy < y){
+         else if(redy < redTargetY){
 
             if(blockCollideTestY(true, "blinky")) {
                 redy = redy + redSpeed;
                 return "down";
-            }else if(redx < x) {
+            }else if(redx < redTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
                     redx = redx + redSpeed;
                     return "right";
                 }
-            }else if(redx > x) {
+            }else if(redx > redTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
                     redx = redx - redSpeed;
@@ -660,18 +748,18 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Up
-        else if(redy > y){
+        else if(redy > redTargetY){
 
             if(blockCollideTestY(false, "blinky")){
                 redy = redy - redSpeed;
                 return "up";
-            }else if(redx < x) {
+            }else if(redx < redTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
                     redx = redx + redSpeed;
                     return "right";
                 }
-            }else if(redx > x) {
+            }else if(redx > redTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
                     redx = redx - redSpeed;
@@ -681,18 +769,18 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }
         //Right
-        else if(redx < x){
+        else if(redx < redTargetX){
 
             if(blockCollideTestX(true, "blinky")){
                 redx = redx + redSpeed;
                 return "right";
-            }else if(redy < y) {
+            }else if(redy < redTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
                     redy = redy + redSpeed;
                     return "down";
                 }
-            }else if(redy > y) {
+            }else if(redy > redTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
                     redy = redy - redSpeed;
@@ -701,18 +789,18 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Left
-        else if(redx > x){
+        else if(redx > redTargetX){
 
             if(blockCollideTestX(false, "blinky")) {
                 redx = redx - redSpeed;
                 return "left";
-            }else if(redy < y) {
+            }else if(redy < redTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
                     redy = redy + redSpeed;
                     return "down";
                 }
-            }else if(redy > y) {
+            }else if(redy > redTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
                     redy = redy - redSpeed;
@@ -802,9 +890,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Coordinates for testing
-        int x=e.getX();
-        int y=e.getY();
-        System.out.println(x+","+y);//these co-ords are relative to the component
+        //int x=e.getX();
+        //int y=e.getY();
+        //System.out.println(x+","+y);//these co-ords are relative to the component
     }
 
 
