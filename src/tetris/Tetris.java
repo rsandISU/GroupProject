@@ -18,8 +18,8 @@ import java.util.Collections;
 import java.util.Random;
 
 public class Tetris implements GameElement, MouseMotionListener, KeyListener {
-    Sprite left, right, bottom, pieceSpr;
-    SpriteText scoreSpr;
+    Sprite left, right, bottom, pieceSpr, statsRect;
+    SpriteText scoreSpr, lvlSpr;
     Canvas c;
 
 
@@ -38,6 +38,9 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     BufferedImage LeftTB = ResourceLoader.getImage("tetrisImages/leftTetrisBackground.jpg");
     BufferedImage RightTB = ResourceLoader.getImage("tetrisImages/rightTetrisBackground.jpg");
     BufferedImage BottomTB = ResourceLoader.getImage("tetrisImages/bottomTetrisBackground.jpg");
+
+    //In game stats
+    BufferedImage Rect = ResourceLoader.getImage("tetrisImages/empty.jpg");
 
 
     //Tetris vars
@@ -59,7 +62,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     private boolean ableToMoveDown;
     private boolean gameOver = false;
     private boolean isFinalPiece = false;
-    private int lvlNum = 0;
+    private int lvlNum;
 
 
 
@@ -69,15 +72,16 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         //each block should have a side length of moveDist
         pieceSpr = new Sprite(Empty, 0, 0, moveDist, moveDist, 10);
 
-        //Score
-        scoreSpr = new SpriteText(924, 80, 200, 200, 11);
-        scoreSpr.setText(""+score, Color.lightGray, 2);
-
         //background is 38.5 wide by 21.5 tall
         left = new Sprite(LeftTB, 0, 0, moveDist*10, moveDist*22,1);
         right = new Sprite(RightTB, moveDist*28, 0, moveDist*11, moveDist*22,2);
         bottom = new Sprite(BottomTB, moveDist*10, moveDist*21, moveDist*18, moveDist*4,4);
 
+        //In game stats
+        statsRect = new Sprite(Rect, moveDist*30, moveDist, moveDist*8, moveDist*5, 5);
+        //Score
+        scoreSpr = new SpriteText(moveDist*30+20, moveDist*2+20, moveDist*4, moveDist*4, 6);
+        lvlSpr = new SpriteText(moveDist*30+20, moveDist+20, moveDist*4, moveDist*7, 6);
 
 
         //Generates the sprites that exist in grid[][]
@@ -234,7 +238,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
     public void dropAll(){
-
+        drop = 0;
         //if it cant move down no need to run this code
         if(ableToMoveDown){
             //check if the piece is at the bottom
@@ -654,10 +658,6 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             }
         }
 
-
-
-
-
         if(isRotated){
             ++rotation;
         }
@@ -698,7 +698,8 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         c.put(right, "RightTB");
         c.put(bottom, "BottomTB");
         c.put(scoreSpr, "Score");
-
+        c.put(lvlSpr, "Level");
+        c.put(statsRect, "Grey Rect");
 
 
 
@@ -725,6 +726,18 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
         if(!gameOver){
+
+            if(lvlNum != 6){
+                lvlSpr.setText("Level: "+lvlNum, Color.CYAN, 2);        //update level
+                scoreSpr.setText("Score: "+score, Color.CYAN, 2);       //update score
+            } else {
+                //if max level set color to red and level to say max
+                lvlSpr.setText("Level: MAX", Color.RED, 2);
+                scoreSpr.setText("Score: "+score, Color.RED, 2);
+            }
+
+
+
             //Copy the state of well[][] over to grid[][]
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[i].length; j++) {
@@ -736,6 +749,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                 }
             }
 
+            //update the level number
             if(score < 1000)
                 lvlNum = 1;
             else if(score < 2000)
@@ -749,14 +763,12 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             else
                 lvlNum = 6;
 
-            if(drop > 60 - (lvlNum-1) * 10){
+
+            if(drop > 60 - (lvlNum-1) * 10){        //at higher lvl drop piece faster
                 dropAll();
-                drop = 0;
             }
-
-
-            scoreSpr.setText(""+score, Color.lightGray, 2);
             drop++;
+
         } else {
             endGame();
         }
@@ -799,7 +811,6 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                 break;
 
             case KeyEvent.VK_DOWN:
-                drop = 0;
                 dropAll();
                 score += 1;
                 break;
