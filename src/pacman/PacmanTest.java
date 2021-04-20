@@ -1,6 +1,7 @@
 package pacman;
 
 import engine.Canvas;
+import menu.Menu;
 import engine.GameElement;
 import engine.Sprite;
 //import engine.SpriteClickable;
@@ -27,6 +28,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     SpriteText gameoverspr;
     SpriteText namespr;
     SpriteText inputspr;
+    Menu m;
     Canvas c;
 
     //Game vars
@@ -96,8 +98,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     BufferedImage door = ResourceLoader.getImage("pacman/door.png");
 
 
-    public PacmanTest(Canvas c) {
+    public PacmanTest(Canvas c, Menu m) {
         this.c = c;
+        this.m = m;
 
         //Background
         backgroundspr = new Sprite(background, 528, 0, 864, 1080, 0);
@@ -469,7 +472,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //GAME OVER
         if(pacmanR.intersects(new Rectangle(redx, redy, redWidth, redHeight))){
 
-            game = false;
+
 
             backgroundspr.setLayer(5);
             gameoverspr.setText("GAME OVER", Color.lightGray, 7);
@@ -479,10 +482,15 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             gameoverspr.setVisible(true);
 
 
+
+            if(game){
+                m.addPacmanScore(score);
+            }
+
+            game = false;
+
             if(c.getKeysDown().contains('a')) {
-                //ScoreEntry highScore = new ScoreEntry(score, "tst");
-                //HighScoreTable table = new HighScoreTable(0, c, menu)
-                //add(highScore);
+
                 c.setElement("MENU");
             }
 
@@ -814,7 +822,11 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     }
 
 
+    public void levelReset(){
 
+
+
+    }
 
     //Returns true if pacman/ghost can't move without colliding in the desired x direction
     public boolean blockCollideTestX(boolean direction, String name){

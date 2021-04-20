@@ -24,7 +24,8 @@ public class Main {
 
         loader.setText("LOADING: MENU", Color.BLACK, 3);
 
-        can.addGameElement("MENU", new Menu(can));
+        Menu m = new Menu(can);
+        can.addGameElement("MENU", m);
 
         loader.setText("LOADING: DEBUG_MENU", Color.BLACK, 3);
 
@@ -40,7 +41,7 @@ public class Main {
 
         loader.setText("LOADING: PACMANTEST", Color.BLACK, 3);
 
-        can.addGameElement("PACMANTEST", new PacmanTest(can));
+        can.addGameElement("PACMANTEST", new PacmanTest(can, m));
 
         loader.setText("LOADING: TETRIS", Color.BLACK, 3);
 
