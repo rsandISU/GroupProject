@@ -33,6 +33,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
     //Game vars
     int score = 0;
+    int level = 1;
+    boolean levelComplete = false;
     boolean game = true;
 
     //Pacman vars
@@ -468,11 +470,24 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         if(redTarget.equals("pacman")) redTargetX = x;
         if(redTarget.equals("pacman")) redTargetY = y;
 
+        //Pellet Scanning
+        int collectedCount = 0;
+        for(int i = 0; i < pelletNumber; i++){
+
+            if(!pelletList.get(i).isVisible()){
+
+            collectedCount = collectedCount + 1;
+
+            }
+                if(collectedCount == pelletNumber) levelComplete = true;
+        }
+        if(levelComplete){
+            level = level + 1;
+            levelReset();
+        }
 
         //GAME OVER
         if(pacmanR.intersects(new Rectangle(redx, redy, redWidth, redHeight))){
-
-
 
             backgroundspr.setLayer(5);
             gameoverspr.setText("GAME OVER", Color.lightGray, 7);
@@ -481,8 +496,6 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             inputspr.setVisible(true);
             gameoverspr.setVisible(true);
 
-
-
             if(game){
                 m.addPacmanScore(score);
             }
@@ -490,7 +503,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             game = false;
 
             if(c.getKeysDown().contains('a')) {
-
+                gameReset();
                 c.setElement("MENU");
             }
 
@@ -822,9 +835,59 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     }
 
 
+    public void gameReset(){
+        levelReset();
+        game = true;
+        score = 0;
+        level = 1;
+        levelComplete = false;
+
+        backgroundspr.setLayer(0);
+        namespr.setVisible(false);
+        inputspr.setVisible(false);
+        gameoverspr.setVisible(false);
+
+
+    }
+
     public void levelReset(){
 
+        levelComplete = false;
 
+        //Pacman vars
+        x = 940;
+        y = 765;
+        speed = 3;
+        width = 45;
+        height = 45;
+
+        //Blinky (red)
+        redx = 950;
+        redy = 525;
+        redSpeed = 2;
+        redLastDirection = "left";
+        redLastLockDirection = "lockleft";
+        redLastLockDirection2 = "lockup";
+        redTargetX = x;
+        redTargetY = y;
+        redTarget = "pacman";
+        redCounter = 0;
+        redWidth = 45;
+        redHeight = 45;
+        redCoolDown = 400;
+
+        //Pellets
+        for(int i = 0; i < pelletNumber; i++){
+
+
+            if(!pelletList.get(i).isVisible()){
+
+                pelletList.get(i).setVisible(true);
+
+
+            }
+
+        }
 
     }
 
