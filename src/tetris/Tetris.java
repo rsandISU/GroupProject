@@ -5,6 +5,7 @@ import engine.Canvas;
 import engine.GameElement;
 import engine.Sprite;
 
+import engine.SpriteText;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -18,6 +19,7 @@ import java.util.Random;
 
 public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     Sprite left, right, bottom, pieceSpr;
+    SpriteText scoreSpr;
     Canvas c;
 
 
@@ -57,6 +59,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     private boolean ableToMoveDown;
     private boolean gameOver = false;
     private boolean isFinalPiece = false;
+    private int lvlNum = 0;
 
 
 
@@ -66,6 +69,9 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         //each block should have a side length of moveDist
         pieceSpr = new Sprite(Empty, 0, 0, moveDist, moveDist, 10);
 
+        //Score
+        scoreSpr = new SpriteText(924, 80, 200, 200, 11);
+        scoreSpr.setText(""+score, Color.lightGray, 2);
 
         //background is 38.5 wide by 21.5 tall
         left = new Sprite(LeftTB, 0, 0, moveDist*10, moveDist*22,1);
@@ -691,6 +697,8 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         c.put(left, "LeftTB");
         c.put(right, "RightTB");
         c.put(bottom, "BottomTB");
+        c.put(scoreSpr, "Score");
+
 
 
 
@@ -728,16 +736,31 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                 }
             }
 
-            if(drop > 60){
+            if(score < 1000)
+                lvlNum = 1;
+            else if(score < 2000)
+                lvlNum = 2;
+            else if(score < 3000)
+                lvlNum = 3;
+            else if(score < 4000)
+                lvlNum = 4;
+            else if(score < 5000)
+                lvlNum = 5;
+            else
+                lvlNum = 6;
+
+            if(drop > 60 - (lvlNum-1) * 10){
                 dropAll();
                 drop = 0;
             }
 
 
+            scoreSpr.setText(""+score, Color.lightGray, 2);
             drop++;
         } else {
             endGame();
         }
+
 
 
 
@@ -778,7 +801,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             case KeyEvent.VK_DOWN:
                 drop = 0;
                 dropAll();
-                //score += ?
+                score += 1;
                 break;
         }
     }
