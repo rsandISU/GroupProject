@@ -45,7 +45,7 @@ public class Main {
 
         loader.setText("LOADING: TETRIS", Color.BLACK, 3);
 
-        can.addGameElement("TETRIS", new Tetris(can));
+        can.addGameElement("TETRIS", new Tetris(can, m));
 
         can.setElement("MENU");
 

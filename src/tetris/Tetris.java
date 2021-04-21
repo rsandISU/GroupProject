@@ -6,6 +6,7 @@ import engine.GameElement;
 import engine.Sprite;
 
 import engine.SpriteText;
+import menu.Menu;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -19,8 +20,9 @@ import java.util.Random;
 
 public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     Sprite left, right, bottom, pieceSpr, statsRect;
-    SpriteText scoreSpr, lvlSpr;
+    SpriteText scoreSpr, lvlSpr, howToExit, howToPlayAgain, rotateControls, moveControls;
     Canvas c;
+    Menu m;
 
 
     BufferedImage Empty = ResourceLoader.getImage("tetrisImages/empty.jpg");
@@ -44,30 +46,29 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
     //Tetris vars
-    private int mx = 0;
-    private int my = 0;
     private int moveDist = 50;
-    private int drop = 0;
+    private int drop;
     private Point pieceOrigin;
     private int currentPiece;
     private int rotation;
     private ArrayList<Integer> nextPieces = new ArrayList<Integer>();
     private int well[][] = new int[21][18];
     private Sprite grid[][] = new Sprite[21][18];
-    private long score;
+    private int score;
     private Random gen = new Random();
     private int pieceNum;
     private boolean ableToMoveRight;
     private boolean ableToMoveLeft;
     private boolean ableToMoveDown;
-    private boolean gameOver = false;
-    private boolean isFinalPiece = false;
+    private boolean isGameOver;
+    private boolean isPaused;
     private int lvlNum;
 
 
 
-    public Tetris(Canvas c){
+    public Tetris(Canvas c, Menu m){
         this.c = c;
+        this.m = m;
 
         //each block should have a side length of moveDist
         pieceSpr = new Sprite(Empty, 0, 0, moveDist, moveDist, 10);
@@ -83,6 +84,15 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         scoreSpr = new SpriteText(moveDist*30+20, moveDist*2+20, moveDist*4, moveDist*4, 6);
         lvlSpr = new SpriteText(moveDist*30+20, moveDist+20, moveDist*4, moveDist*7, 6);
 
+        //controlls
+        rotateControls = new SpriteText(moveDist*30+20, moveDist*4, moveDist*4, moveDist*4, 6);
+        moveControls = new SpriteText(moveDist*30+20, moveDist*5, moveDist*4, moveDist*4, 6);
+
+        //when game is over rules to go back
+        howToExit = new SpriteText(moveDist*14, moveDist*9, moveDist*4, moveDist*4, 6);
+
+        //when game is over rules to play again
+        howToPlayAgain = new SpriteText(moveDist*11+25, moveDist*11, moveDist*4, moveDist*4, 6);
 
         //Generates the sprites that exist in grid[][]
         for (int i = 0; i < grid.length; ++i) {
@@ -92,6 +102,8 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         }
 
     }
+
+
 
 
     //grid is 18 wide by 21 tall
@@ -157,7 +169,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             }
         }
         if(!ableToMoveDown){
-            gameOver = true;
+            isGameOver = true;
         }
 
 
@@ -672,11 +684,11 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
     public void endGame(){
-        //print the last piece
-        if(!isFinalPiece){
+
+        if(!isPaused){
             //Copy the state of well[][] over to grid[][]
             for (int i = 0; i < grid.length; i++) {
-                for (int j = 0; j < grid[i].length; j++) {
+                for (int j = 0; j < grid[i].length; j++) {      //print the last piece
                     if (well[i][j] == 0) {
                         grid[i][j].setImage(Empty);
                     } else {
@@ -684,8 +696,21 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                     }
                 }
             }
-            isFinalPiece = true;
+            m.addTetrisScore(score);
+
+
+
+
+
+
+
+            isPaused = true;        //dont print any more pieces
         }
+
+
+
+
+
 
 
     }
@@ -697,11 +722,32 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         c.put(left, "LeftTB");
         c.put(right, "RightTB");
         c.put(bottom, "BottomTB");
+        c.put(statsRect, "Grey Rect");
         c.put(scoreSpr, "Score");
         c.put(lvlSpr, "Level");
-        c.put(statsRect, "Grey Rect");
+        c.put(rotateControls, "Rotate Controls");
+        c.put(moveControls, "Move Controls");
+        c.put(howToExit, "Exit Rules");
+        c.put(howToPlayAgain, "Play Again Rules");
+
+        //initialize vars
+        isGameOver = false;
+        isPaused = false;
+        drop = 0;
+        score = 0;
+
+        howToExit.setVisible(false);
+        howToPlayAgain.setVisible(false);
+
+        rotateControls.setText("SPACE to rotate", Color.CYAN, 2);
+        moveControls.setText("ARROW KEYS to move", Color.CYAN, 1.7);
 
 
+        for (int i = 0; i < well.length; ++i) {
+            for (int j = 0; j < well[i].length; ++j) {
+                well[i][j] = 0;
+            }
+        }
 
         //Adds all of the content of gird[][] onto the canvas
         for (int i = 0; i < grid.length; i++) {
@@ -725,7 +771,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     public void update() {
 
 
-        if(!gameOver){
+        if(!isGameOver){
 
             if(lvlNum != 6){
                 lvlSpr.setText("Level: "+lvlNum, Color.CYAN, 2);        //update level
@@ -770,6 +816,10 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             drop++;
 
         } else {
+            howToExit.setVisible(true);
+            howToExit.setText("Press B to exit", Color.RED, 3);
+            howToPlayAgain.setVisible(true);
+            howToPlayAgain.setText("Press A to play again", Color.RED, 3);
             endGame();
         }
 
@@ -814,6 +864,15 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                 dropAll();
                 score += 1;
                 break;
+            case KeyEvent.VK_B:
+                if(isPaused)
+                    c.setElement("MENU");
+                break;
+            case KeyEvent.VK_A:
+                if(isPaused)
+                    start();
+                break;
+
         }
     }
 
