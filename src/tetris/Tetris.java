@@ -185,29 +185,27 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     }
 
     public void moveRight() {
-        //if ableToMoveRight is false no need to run this code
-        if(ableToMoveRight){
-            //check along right wall
-            for (int i = 0; i < well.length; ++i) {
-                if (well[i][well[i].length - 1] == pieceNum) {
-                    ableToMoveRight = false;
-                }
-            }
+        ableToMoveRight = true;
 
-            //check if current piece is hitting a fixed piece
-            for(int i = 0; i < well.length; ++i){
-                for(int j = 0; j < well[i].length - 1; ++j){
-                    if(well[i][j] == pieceNum && well[i][j+1] == 1){
+        //check along right wall
+        for (int i = 0; i < well.length; ++i) {
+            if (well[i][well[i].length - 1] == pieceNum) {
+                ableToMoveRight = false;
+            }
+        }
+
+        //check if current piece is hitting a fixed piece
+        for(int i = 0; i < well.length; ++i) {
+                for (int j = 0; j < well[i].length - 1; ++j) {
+                    if (well[i][j] == pieceNum && well[i][j + 1] == 1) {
                         ableToMoveRight = false;
-                    }
                 }
             }
         }
 
+
         //if it can move right then do it
         if(ableToMoveRight){
-            //if it moves right it can move left again
-            ableToMoveLeft = true;
             //iterate through entire well and move each piece over 1
             for (int i = well.length-1; i >= 0; --i) {
                 for (int j = well[i].length - 2; j >= 0; --j) {
@@ -222,30 +220,28 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
     public void moveLeft(){
-        //if able to move left is false no need to run this code
-        if(ableToMoveLeft){
-            //check along left wall
-            for(int i = 0; i < well.length; ++i){
-                if(well[i][0] == pieceNum){
-                    ableToMoveLeft = false;
-                }
+        ableToMoveLeft = true;
+
+        //check along left wall
+        for(int i = 0; i < well.length; ++i){
+            if(well[i][0] == pieceNum){
+                ableToMoveLeft = false;
             }
+        }
 
             //check if current piece is hitting a fixed piece
-            for(int i = 0; i < well.length; ++i){
-                for(int j = 1; j < well[i].length; ++j){
-                    if(well[i][j] == pieceNum && well[i][j-1] == 1){
-                        ableToMoveLeft = false;
-                    }
+        for(int i = 0; i < well.length; ++i){
+            for(int j = 1; j < well[i].length; ++j){
+                if(well[i][j] == pieceNum && well[i][j-1] == 1){
+                    ableToMoveLeft = false;
                 }
             }
         }
 
 
+
         //if it can move left then do it
         if(ableToMoveLeft){
-            //if it moves left then it can move right again
-            ableToMoveRight = true;
             for(int i = 0; i < well.length; ++i){
                 for(int j = 1; j < well[i].length; ++j){
                     if(well[i][j] == pieceNum){
@@ -338,8 +334,6 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         int row = 0;
         int col = 0;
         boolean isRotated = true;
-        ableToMoveLeft = true;
-        ableToMoveRight = true;
 
         for(int i = well.length - 1; i >= 0; --i){
             for(int j = well[i].length - 1; j >= 0; --j){
