@@ -25,6 +25,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     Menu m;
 
 
+    //piece images
     BufferedImage Empty = ResourceLoader.getImage("tetrisImages/empty.jpg");
     BufferedImage IPiece = ResourceLoader.getImage("tetrisImages/IPiece.png");
     BufferedImage JPiece = ResourceLoader.getImage("tetrisImages/JPiece.png");
@@ -33,6 +34,11 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     BufferedImage SPiece = ResourceLoader.getImage("tetrisImages/SPiece.png");
     BufferedImage TPiece = ResourceLoader.getImage("tetrisImages/TPiece.png");
     BufferedImage ZPiece = ResourceLoader.getImage("tetrisImages/ZPiece.png");
+
+    //fun mode
+    BufferedImage Steven = ResourceLoader.getImage("tetrisImages/steven.jpg");
+    BufferedImage Marcus = ResourceLoader.getImage("tetrisImages/marcus.jpg");
+
 
 
 
@@ -682,37 +688,73 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
     }
 
+    public void funMode(){
+        //Copy the state of well[][] over to grid[][]
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (well[i][j] == 0) {
+                    grid[i][j].setImage(Empty);
+                } else if (well[i][j] == 1) {
+                    grid[i][j].setImage(Marcus);
+                } else if (well[i][j] >= 2) {
+                    grid[i][j].setImage(Steven);
+                }
+            }
+        }
+    }
 
+    public void displayPiece(){
+        //Copy the state of well[][] over to grid[][]
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                if (well[i][j] == 0) {
+                    grid[i][j].setImage(Empty);
+                } else if (well[i][j] == 1) {
+                    if(grid[i][j].getImage() == Empty){
+                        if(prevPieceNum == 2)
+                            grid[i][j].setImage(IPiece);
+                        else if(prevPieceNum == 3)
+                            grid[i][j].setImage(JPiece);
+                        else if(prevPieceNum == 4)
+                            grid[i][j].setImage(LPiece);
+                        else if(prevPieceNum == 5)
+                            grid[i][j].setImage(OPiece);
+                        else if(prevPieceNum == 6)
+                            grid[i][j].setImage(SPiece);
+                        else if(prevPieceNum == 7)
+                            grid[i][j].setImage(TPiece);
+                        else if(prevPieceNum == 8)
+                            grid[i][j].setImage(ZPiece);
+                    }
+                } else if (well[i][j] == 2) {
+                    grid[i][j].setImage(IPiece);
+                } else if (well[i][j] == 3) {
+                    grid[i][j].setImage(JPiece);
+                } else if (well[i][j] == 4) {
+                    grid[i][j].setImage(LPiece);
+                } else if (well[i][j] == 5) {
+                    grid[i][j].setImage(OPiece);
+                } else if (well[i][j] == 6) {
+                    grid[i][j].setImage(SPiece);
+                } else if (well[i][j] == 7) {
+                    grid[i][j].setImage(TPiece);
+                } else if (well[i][j] == 8) {
+                    grid[i][j].setImage(ZPiece);
+                }
+            }
+        }
+    }
 
 
 
     public void endGame(){
 
         if(!isPaused){
-            //Copy the state of well[][] over to grid[][]
-            for (int i = 0; i < grid.length; i++) {
-                for (int j = 0; j < grid[i].length; j++) {      //print the last piece
-                    if (well[i][j] == 0) {
-                        grid[i][j].setImage(Empty);
-                    } else if(well[i][j] == 1){
-                        //fixed piece dont change sprite
-                    } else if(well[i][j] == 2){
-                        grid[i][j].setImage(IPiece);
-                    } else if(well[i][j] == 3){
-                        grid[i][j].setImage(JPiece);
-                    } else if(well[i][j] == 4){
-                        grid[i][j].setImage(LPiece);
-                    } else if(well[i][j] == 5){
-                        grid[i][j].setImage(OPiece);
-                    } else if(well[i][j] == 6){
-                        grid[i][j].setImage(SPiece);
-                    } else if(well[i][j] == 7){
-                        grid[i][j].setImage(TPiece);
-                    } else if(well[i][j] == 8){
-                        grid[i][j].setImage(ZPiece);
-                    }
-                }
-            }
+            if(lvlNum != 6)
+                displayPiece();  //print the last piece
+            else
+                funMode();
+
             m.addTetrisScore(score);
 
             isPaused = true;        //dont print any more pieces
@@ -792,48 +834,10 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                     scoreSpr.setText("Score: " + score, Color.RED, 2);
                 }
 
-
-                //Copy the state of well[][] over to grid[][]
-                for (int i = 0; i < grid.length; i++) {
-                    for (int j = 0; j < grid[i].length; j++) {
-                        if (well[i][j] == 0) {
-                            grid[i][j].setImage(Empty);
-                        } else if (well[i][j] == 1) {
-                            if(grid[i][j].getImage() == Empty){
-                                if(prevPieceNum == 2)
-                                    grid[i][j].setImage(IPiece);
-                                else if(prevPieceNum == 3)
-                                    grid[i][j].setImage(JPiece);
-                                else if(prevPieceNum == 4)
-                                    grid[i][j].setImage(LPiece);
-                                else if(prevPieceNum == 5)
-                                    grid[i][j].setImage(OPiece);
-                                else if(prevPieceNum == 6)
-                                    grid[i][j].setImage(SPiece);
-                                else if(prevPieceNum == 7)
-                                    grid[i][j].setImage(TPiece);
-                                else if(prevPieceNum == 8)
-                                    grid[i][j].setImage(ZPiece);
-
-
-                            }
-                        } else if (well[i][j] == 2) {
-                            grid[i][j].setImage(IPiece);
-                        } else if (well[i][j] == 3) {
-                            grid[i][j].setImage(JPiece);
-                        } else if (well[i][j] == 4) {
-                            grid[i][j].setImage(LPiece);
-                        } else if (well[i][j] == 5) {
-                            grid[i][j].setImage(OPiece);
-                        } else if (well[i][j] == 6) {
-                            grid[i][j].setImage(SPiece);
-                        } else if (well[i][j] == 7) {
-                            grid[i][j].setImage(TPiece);
-                        } else if (well[i][j] == 8) {
-                            grid[i][j].setImage(ZPiece);
-                        }
-                    }
-                }
+                if(lvlNum != 6)
+                    displayPiece();
+                else
+                    funMode();
 
                 //update the level number
                 if (score < 1000)
