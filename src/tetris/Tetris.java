@@ -26,13 +26,13 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
     BufferedImage Empty = ResourceLoader.getImage("tetrisImages/empty.jpg");
-    BufferedImage Square = ResourceLoader.getImage("tetrisImages/IPiece.png");
-//    BufferedImage JPiece = ResourceLoader.getImage("tetrisImages/JPiece.png");
-//    BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
-//    BufferedImage OPiece = ResourceLoader.getImage("tetrisImages/OPiece.png");
-//    BufferedImage SPiece = ResourceLoader.getImage("tetrisImages/SPiece.png");
-//    BufferedImage TPiece = ResourceLoader.getImage("tetrisImages/TPiece.png");
-//    BufferedImage ZPiece = ResourceLoader.getImage("tetrisImages/ZPiece.png");
+    BufferedImage IPiece = ResourceLoader.getImage("tetrisImages/IPiece.png");
+    BufferedImage JPiece = ResourceLoader.getImage("tetrisImages/JPiece.png");
+    BufferedImage LPiece = ResourceLoader.getImage("tetrisImages/LPiece.png");
+    BufferedImage OPiece = ResourceLoader.getImage("tetrisImages/OPiece.png");
+    BufferedImage SPiece = ResourceLoader.getImage("tetrisImages/SPiece.png");
+    BufferedImage TPiece = ResourceLoader.getImage("tetrisImages/TPiece.png");
+    BufferedImage ZPiece = ResourceLoader.getImage("tetrisImages/ZPiece.png");
 
 
 
@@ -41,7 +41,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     BufferedImage RightTB = ResourceLoader.getImage("tetrisImages/rightTetrisBackground.jpg");
     BufferedImage BottomTB = ResourceLoader.getImage("tetrisImages/bottomTetrisBackground.jpg");
 
-    //In game stats
+    //In game stats background
     BufferedImage Rect = ResourceLoader.getImage("tetrisImages/empty.jpg");
 
 
@@ -57,6 +57,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     private int score;
     private Random gen = new Random();
     private int pieceNum;
+    private int prevPieceNum;
     private boolean ableToMoveRight;
     private boolean ableToMoveLeft;
     private boolean ableToMoveDown;
@@ -111,49 +112,51 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         //fix any old pieces into position
         for (int i = 0; i < well.length; ++i) {
             for (int j = 0; j < well[i].length; ++j) {
-                if(well[i][j] == 1){
-                    well[i][j] = 2;
+                if(well[i][j] != 1 && well[i][j] != 0){
+                    well[i][j] = 1;
                 }
             }
         }
         clearRows();
 
-        pieceNum = gen.nextInt(7);      //generate a random piece
+        prevPieceNum = pieceNum;
+        pieceNum = gen.nextInt(7) + 2;      //generate a random piece
 
-        if(pieceNum == 0){      //create I piece
+        //pieceNum = 8;
+        if(pieceNum == 2){      //create I piece
             for(int i = 0; i < 4; ++i){
-                well[i][8] = 1;
+                well[i][8] = pieceNum;
             }
-        } else if(pieceNum == 1){       //create J piece
+        } else if(pieceNum == 3){       //create J piece
             for(int i = 0; i < 3; ++i){
-                well[i][8] = 1;
+                well[i][8] = pieceNum;
             }
-            well[2][7] = 1;
-        } else if(pieceNum == 2){       //create L piece
+            well[2][7] = pieceNum;
+        } else if(pieceNum == 4){       //create L piece
             for(int i = 0; i < 3; ++i){
-                well[i][8] = 1;
+                well[i][8] = pieceNum;
             }
-            well[2][9] = 1;
-        } else if(pieceNum == 3){       //create O piece
-            well[0][8] = 1;
-            well[1][8] = 1;
-            well[0][9] = 1;
-            well[1][9] = 1;
-        } else if(pieceNum == 4){       //create S piece
-            well[0][8] = 1;
-            well[1][8] = 1;
-            well[1][7] = 1;
-            well[0][9] = 1;
-        } else if(pieceNum == 5){       //create T piece
-            well[0][8] = 1;
-            well[1][8] = 1;
-            well[1][7] = 1;
-            well[1][9] = 1;
-        } else if(pieceNum == 6){       //create Z piece
-            well[0][8] = 1;
-            well[1][8] = 1;
-            well[0][7] = 1;
-            well[1][9] = 1;
+            well[2][9] = pieceNum;
+        } else if(pieceNum == 5){       //create O piece
+            well[0][8] = pieceNum;
+            well[1][8] = pieceNum;
+            well[0][9] = pieceNum;
+            well[1][9] = pieceNum;
+        } else if(pieceNum == 6){       //create S piece
+            well[0][8] = pieceNum;
+            well[1][8] = pieceNum;
+            well[1][7] = pieceNum;
+            well[0][9] = pieceNum;
+        } else if(pieceNum == 7){       //create T piece
+            well[0][8] = pieceNum;
+            well[1][8] = pieceNum;
+            well[1][7] = pieceNum;
+            well[1][9] = pieceNum;
+        } else if(pieceNum == 8){       //create Z piece
+            well[0][8] = pieceNum;
+            well[1][8] = pieceNum;
+            well[0][7] = pieceNum;
+            well[1][9] = pieceNum;
         }
 
         ableToMoveRight = true;
@@ -163,7 +166,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         //check if the new piece is hitting a fixed piece
         for (int i = well.length-2; i >= 0; --i) {
             for (int j = well[i].length - 1; j >= 0; --j) {
-                if(well[i][j] == 1 && well[i+1][j] == 2){
+                if(well[i][j] == pieceNum && well[i+1][j] == 1){
                     ableToMoveDown = false;
                 }
             }
@@ -180,7 +183,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         if(ableToMoveRight){
             //check along right wall
             for (int i = 0; i < well.length; ++i) {
-                if (well[i][well[i].length - 1] == 1) {
+                if (well[i][well[i].length - 1] == pieceNum) {
                     ableToMoveRight = false;
                 }
             }
@@ -188,7 +191,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             //check if current piece is hitting a fixed piece
             for(int i = 0; i < well.length; ++i){
                 for(int j = 0; j < well[i].length - 1; ++j){
-                    if(well[i][j] == 1 && well[i][j+1] == 2){
+                    if(well[i][j] == pieceNum && well[i][j+1] == 1){
                         ableToMoveRight = false;
                     }
                 }
@@ -202,8 +205,8 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             //iterate through entire well and move each piece over 1
             for (int i = well.length-1; i >= 0; --i) {
                 for (int j = well[i].length - 2; j >= 0; --j) {
-                    if(well[i][j] == 1){
-                        well[i][j + 1] = 1;
+                    if(well[i][j] == pieceNum){
+                        well[i][j + 1] = pieceNum;
                         well[i][j] = 0;
                     }
                 }
@@ -217,7 +220,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         if(ableToMoveLeft){
             //check along left wall
             for(int i = 0; i < well.length; ++i){
-                if(well[i][0] == 1){
+                if(well[i][0] == pieceNum){
                     ableToMoveLeft = false;
                 }
             }
@@ -225,7 +228,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             //check if current piece is hitting a fixed piece
             for(int i = 0; i < well.length; ++i){
                 for(int j = 1; j < well[i].length; ++j){
-                    if(well[i][j] == 1 && well[i][j-1] == 2){
+                    if(well[i][j] == pieceNum && well[i][j-1] == 1){
                         ableToMoveLeft = false;
                     }
                 }
@@ -239,9 +242,9 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             ableToMoveRight = true;
             for(int i = 0; i < well.length; ++i){
                 for(int j = 1; j < well[i].length; ++j){
-                    if(well[i][j] == 1){
+                    if(well[i][j] == pieceNum){
                         well[i][j] = 0;
-                        well[i][j-1] = 1;
+                        well[i][j-1] = pieceNum;
                     }
                 }
             }
@@ -255,7 +258,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         if(ableToMoveDown){
             //check if the piece is at the bottom
             for(int j = 0; j < well[well.length-1].length; ++j){
-                if(well[well.length-1][j] == 1){
+                if(well[well.length-1][j] == pieceNum){
                     ableToMoveDown = false;
                 }
             }
@@ -263,7 +266,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             //check if current falling piece is hitting a fixed piece
             for (int i = well.length-2; i >= 0; --i) {
                 for (int j = well[i].length - 1; j >= 0; --j) {
-                    if(well[i][j] == 1 && well[i+1][j] == 2){
+                    if(well[i][j] == pieceNum && well[i+1][j] == 1){
                         ableToMoveDown = false;
                     }
                 }
@@ -271,13 +274,13 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         }
 
 
-        //if piece can moe down then do it
+        //if piece can move down then do it
         if(ableToMoveDown){
             for (int i = well.length-2; i >= 0; --i) {
                 for (int j = well[i].length - 1; j >= 0; --j) {
-                    if(well[i][j] == 1){
+                    if(well[i][j] == pieceNum){
                         well[i][j] = 0;
-                        well[i+1][j] = 1;
+                        well[i+1][j] = pieceNum;
                     }
                 }
             }
@@ -294,7 +297,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             isCompleteRow = true;
 
             for (int j = 0; j < well[i].length; ++j) {
-                if(well[i][j] != 2){
+                if(well[i][j] != 1){
                     isCompleteRow = false;      //not a complete row, move on to the next one
                 }
             }
@@ -334,65 +337,65 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
         for(int i = well.length - 1; i >= 0; --i){
             for(int j = well[i].length - 1; j >= 0; --j){
-                if(well[i][j] == 1){    //find the top left piece
+                if(well[i][j] == pieceNum){    //find the top left piece
                     row = i;
                     col = j;
                 }
             }
         }
 
-        if(pieceNum == 0){              //I piece
+        if(pieceNum == 2){              //I piece
             if(rotation == 0 || rotation == 2){
                 //check bounds
                 if(!(col-1 < 0) && !(col+2 > well[row].length-1)     //checks for walls
-                        && well[row+1][col-1] != 2 && well[row+1][col] != 2 //checks for fixed piece
-                        && well[row+1][col+1] != 2 && well[row+1][col+2] != 2){
+                        && well[row+1][col-1] != 1 && well[row+1][col] != 1 //checks for fixed piece
+                        && well[row+1][col+1] != 1 && well[row+1][col+2] != 1){
 
                     well[row][col] = 0;        //clear the current piece
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
                     well[row+3][col] = 0;
 
-                    well[row+1][col-1] = 1;     //create the rotated piece
-                    well[row+1][col] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row+1][col+2] = 1;
+                    well[row+1][col-1] = pieceNum;     //create the rotated piece
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+1][col+2] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 1 || rotation == 3){
                 if(!(row+4 > well.length-1)         //checks bottom wall
-                        && well[row][col+1] != 2 && well[row+1][col+1] != 2       //checks for fixed piece
-                        && well[row+2][col+1] != 2 && well[row+3][col+1] != 2){
+                        && well[row][col+1] != 1 && well[row+1][col+1] != 1       //checks for fixed piece
+                        && well[row+2][col+1] != 1 && well[row+3][col+1] != 1){
                     //0,0 0,1 0,2 0,3
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row][col+2] = 0;
                     well[row][col+3] = 0;
                     //1,0 1,1 1,2 1,3
-                    well[row][col+1] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row+2][col+1] = 1;
-                    well[row+3][col+1] = 1;
+                    well[row][col+1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+2][col+1] = pieceNum;
+                    well[row+3][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
             }
-        } else if(pieceNum == 1){       //J piece
+        } else if(pieceNum == 3){       //J piece
             if(rotation == 0){
                 if(!(col+1 > well[row].length-1)
-                        && well[row][col-1] != 2 && well[row+1][col-1] != 2
-                        && well[row+1][col] != 2 && well[row+1][col+1] != 2){
+                        && well[row][col-1] != 1 && well[row+1][col-1] != 1
+                        && well[row+1][col] != 1 && well[row+1][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
                     well[row+2][col-1] = 0;
 
-                    well[row][col-1] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row][col-1] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
@@ -400,157 +403,157 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
             } else if(rotation == 1){
                 if(!(row+2 > well.length-1)     //check for walls
-                        && well[row][col+1] != 2 && well[row][col+2] != 2       //check for fixed piece
-                        && well[row+1][col+1] != 2 && well[row+2][col+1] != 2){
+                        && well[row][col+1] != 1 && well[row][col+2] != 1       //check for fixed piece
+                        && well[row+1][col+1] != 1 && well[row+2][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col+1] = 0;
                     well[row+1][col+2] = 0;
 
-                    well[row][col+1] = 1;
-                    well[row][col+2] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row+2][col+1] = 1;
+                    well[row][col+1] = pieceNum;
+                    well[row][col+2] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+2][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 2){
                 if(!(col-1 < 0)     //check for walls
-                        && well[row+1][col] != 2 && well[row+1][col-1] != 2     //check for fixed piece
-                        && well[row+1][col+1] != 2 && well[row+2][col+1] != 2){
+                        && well[row+1][col] != 1 && well[row+1][col-1] != 1     //check for fixed piece
+                        && well[row+1][col+1] != 1 && well[row+2][col+1] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
 
-                    well[row+1][col] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row+2][col+1] = 1;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+2][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
             } else if(rotation == 3){
                 if(!(row-1 < 0)     //check for walls
-                        && well[row+1][col] != 2 && well[row+1][col+1] != 2     //check for fixed piece
-                        && well[row][col+1] != 2 && well[row-1][col+1] != 2){
+                        && well[row+1][col] != 1 && well[row+1][col+1] != 1     //check for fixed piece
+                        && well[row][col+1] != 1 && well[row-1][col+1] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row][col+2] = 0;
                     well[row+1][col+2] = 0;
 
-                    well[row+1][col] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row][col+1] = 1;
-                    well[row-1][col+1] = 1;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row][col+1] = pieceNum;
+                    well[row-1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
             }
-        } else if(pieceNum == 2) {      //L piece
+        } else if(pieceNum == 4) {      //L piece
             if(rotation == 0){
                 if(!(col-1 < 0)     //check for walls
-                        && well[row+1][col-1] != 2 && well[row+1][col] != 2     //check for fixed piece
-                        && well[row+2][col-1] != 2 && well[row+1][col+1] != 2){
+                        && well[row+1][col-1] != 1 && well[row+1][col] != 1     //check for fixed piece
+                        && well[row+2][col-1] != 1 && well[row+1][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
                     well[row+2][col+1] = 0;
 
-                    well[row+1][col-1] = 1;
-                    well[row+1][col] = 1;
-                    well[row+2][col-1] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+2][col-1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 1){
                 if(!(row-1 < 0)     //check for walls
-                        && well[row-1][col] != 2 && well[row-1][col+1] != 2     //check for fixed piece
-                        && well[row][col+1] != 2 && well[row+1][col+1] != 2){
+                        && well[row-1][col] != 1 && well[row-1][col+1] != 1     //check for fixed piece
+                        && well[row][col+1] != 1 && well[row+1][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row][col+1] = 0;
                     well[row][col+2] = 0;
 
-                    well[row-1][col] = 1;
-                    well[row-1][col+1] = 1;
-                    well[row][col+1] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row-1][col] = pieceNum;
+                    well[row-1][col+1] = pieceNum;
+                    well[row][col+1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 2){
                 if(!(col+2 > well[row].length-1)        //check for walls
-                        && well[row+1][col] != 2 && well[row+1][col+1] != 2     //check for fixed piece
-                        && well[row+1][col+2] != 2 && well[row][col+2] != 2){
+                        && well[row+1][col] != 1 && well[row+1][col+1] != 1     //check for fixed piece
+                        && well[row+1][col+2] != 1 && well[row][col+2] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row+1][col+1] = 0;
                     well[row+2][col+1] = 0;
 
-                    well[row+1][col] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row+1][col+2] = 1;
-                    well[row][col+2] = 1;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+1][col+2] = pieceNum;
+                    well[row][col+2] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 3){
                 if(!(row+2 > well.length-1)     //check for walls
-                        && well[row][col-1] != 2 && well[row+1][col-1] != 2     //check for fixed piece
-                        && well[row+2][col-1] != 2 && well[row+2][col] != 2){
+                        && well[row][col-1] != 1 && well[row+1][col-1] != 1     //check for fixed piece
+                        && well[row+2][col-1] != 1 && well[row+2][col] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col-1] = 0;
                     well[row+1][col-2] = 0;
 
-                    well[row][col-1] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+2][col-1] = 1;
-                    well[row+2][col] = 1;
+                    well[row][col-1] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+2][col-1] = pieceNum;
+                    well[row+2][col] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             }
-        } else if(pieceNum == 3){       //O piece
+        } else if(pieceNum == 5){       //O piece
             //a square doesnt rotate because its a square
-        } else if(pieceNum == 4){       //S piece
+        } else if(pieceNum == 6){       //S piece
             if(rotation == 0 || rotation == 2){
                 if(!(row+2 > well.length-1)
-                        && well[row][col-1] != 2 && well[row+1][col-1] != 2
-                        && well[row+1][col] != 2 && well[row+2][col] != 2){
+                        && well[row][col-1] != 1 && well[row+1][col-1] != 1
+                        && well[row+1][col] != 1 && well[row+2][col] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col-1] = 0;
 
-                    well[row][col-1] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col] = 1;
-                    well[row+2][col] = 1;
+                    well[row][col-1] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+2][col] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 1 || rotation == 3){
                 if(!(col+2 > well[row].length-1)
-                        && well[row+2][col] != 2 && well[row+2][col+1] != 2
-                        && well[row+1][col+1] != 2 && well[row+1][col+2] != 2){
+                        && well[row+2][col] != 1 && well[row+2][col+1] != 1
+                        && well[row+1][col+1] != 1 && well[row+1][col+2] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col+1] = 0;
                     well[row+2][col+1] = 0;
 
-                    well[row+1][col] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row][col+1] = 1;
-                    well[row][col+2] = 1;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row][col+1] = pieceNum;
+                    well[row][col+2] = pieceNum;
                 } else {
                     isRotated = false;
                 }
@@ -560,71 +563,71 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
 
 
-        } else if(pieceNum == 5){       //T piece
+        } else if(pieceNum == 7){       //T piece
             if(rotation == 0){
                 if(!(row+2 > well.length-1
-                        && well[row][col] != 2 && well[row+1][col] != 2
-                        && well[row+2][col] != 2 && well[row+1][col+1] != 2)){
+                        && well[row][col] != 1 && well[row+1][col] != 1
+                        && well[row+2][col] != 1 && well[row+1][col+1] != 1)){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col-1] = 0;
                     well[row+1][col+1] = 0;
 
-                    well[row][col] = 1;
-                    well[row+1][col] = 1;
-                    well[row+2][col] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row][col] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+2][col] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 1){
                 if(!(col-1 < 0)
-                        && well[row+2][col] != 2 && well[row+1][col] != 2
-                        && well[row+1][col-1] != 2 && well[row+1][col+1] != 2){
+                        && well[row+2][col] != 1 && well[row+1][col] != 1
+                        && well[row+1][col-1] != 1 && well[row+1][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
                     well[row][col+1] = 0;
 
-                    well[row+2][col] = 1;
-                    well[row+1][col] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row+2][col] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 2){
                 if(!(row-1 < 0)
-                        && well[row][col] != 2 && well[row][col+1] != 2
-                        && well[row+1][col+1] != 2 && well[row-1][col+1] != 2){
+                        && well[row][col] != 1 && well[row][col+1] != 1
+                        && well[row+1][col+1] != 1 && well[row-1][col+1] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row][col+2] = 0;
                     well[row+1][col+1] = 0;
 
-                    well[row][col] = 1;
-                    well[row][col+1] = 1;
-                    well[row+1][col+1] = 1;
-                    well[row-1][col+1] = 1;
+                    well[row][col] = pieceNum;
+                    well[row][col+1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
+                    well[row-1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 3){
                 if(!(col+1 > well[row].length-1)
-                        && well[row][col] != 2 && well[row+1][col] != 2
-                        && well[row+1][col-1] != 2 && well[row+1][col+1] != 2){
+                        && well[row][col] != 1 && well[row+1][col] != 1
+                        && well[row+1][col-1] != 1 && well[row+1][col+1] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+2][col] = 0;
                     well[row+1][col-1] = 0;
 
-                    well[row][col] = 1;
-                    well[row+1][col] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col+1] = 1;
+                    well[row][col] = pieceNum;
+                    well[row+1][col] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col+1] = pieceNum;
                 } else {
                     isRotated = false;
                 }
@@ -632,37 +635,37 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
             }
 
 
-        } else if(pieceNum == 6){       //Z piece
+        } else if(pieceNum == 8){       //Z piece
             if(rotation == 0 || rotation == 2){
                 if(!(row+2 > well.length-1)
-                        && well[row+1][col+1] != 2 && well[row+2][col+1] != 2
-                        && well[row][col+2] != 2 && well[row+1][col+2] != 2){
+                        && well[row+1][col+1] != 1 && well[row+2][col+1] != 1
+                        && well[row][col+2] != 1 && well[row+1][col+2] != 1){
                     well[row][col] = 0;
                     well[row][col+1] = 0;
                     well[row+1][col+1] = 0;
                     well[row+1][col+2] = 0;
 
-                    well[row+1][col+1] = 1;
-                    well[row+2][col+1] = 1;
-                    well[row][col+2] = 1;
-                    well[row+1][col+2] = 1;
+                    well[row+1][col+1] = pieceNum;
+                    well[row+2][col+1] = pieceNum;
+                    well[row][col+2] = pieceNum;
+                    well[row+1][col+2] = pieceNum;
                 } else {
                     isRotated = false;
                 }
 
             } else if(rotation == 1 || rotation == 3){
                 if(!(col-2 < 0)
-                        && well[row][col-2] != 2 && well[row][col-1] != 2
-                        && well[row+1][col-1] != 2 && well[row+1][col] != 2){
+                        && well[row][col-2] != 1 && well[row][col-1] != 1
+                        && well[row+1][col-1] != 1 && well[row+1][col] != 1){
                     well[row][col] = 0;
                     well[row+1][col] = 0;
                     well[row+1][col-1] = 0;
                     well[row+2][col-1] = 0;
 
-                    well[row][col-2] = 1;
-                    well[row][col-1] = 1;
-                    well[row+1][col-1] = 1;
-                    well[row+1][col] = 1;
+                    well[row][col-2] = pieceNum;
+                    well[row][col-1] = pieceNum;
+                    well[row+1][col-1] = pieceNum;
+                    well[row+1][col] = pieceNum;
                 } else {
                     isRotated = false;
                 }
@@ -691,27 +694,29 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
                 for (int j = 0; j < grid[i].length; j++) {      //print the last piece
                     if (well[i][j] == 0) {
                         grid[i][j].setImage(Empty);
-                    } else {
-                        grid[i][j].setImage(Square);
+                    } else if(well[i][j] == 1){
+                        //fixed piece dont change sprite
+                    } else if(well[i][j] == 2){
+                        grid[i][j].setImage(IPiece);
+                    } else if(well[i][j] == 3){
+                        grid[i][j].setImage(JPiece);
+                    } else if(well[i][j] == 4){
+                        grid[i][j].setImage(LPiece);
+                    } else if(well[i][j] == 5){
+                        grid[i][j].setImage(OPiece);
+                    } else if(well[i][j] == 6){
+                        grid[i][j].setImage(SPiece);
+                    } else if(well[i][j] == 7){
+                        grid[i][j].setImage(TPiece);
+                    } else if(well[i][j] == 8){
+                        grid[i][j].setImage(ZPiece);
                     }
                 }
             }
             m.addTetrisScore(score);
 
-
-
-
-
-
-
             isPaused = true;        //dont print any more pieces
         }
-
-
-
-
-
-
 
     }
 
@@ -771,57 +776,89 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     public void update() {
 
 
-        if(!isGameOver){
+            if (!isGameOver) {
 
-            if(lvlNum != 6){
-                lvlSpr.setText("Level: "+lvlNum, Color.CYAN, 2);        //update level
-                scoreSpr.setText("Score: "+score, Color.CYAN, 2);       //update score
-            } else {
-                //if max level set color to red and level to say max
-                lvlSpr.setText("Level: MAX", Color.RED, 2);
-                scoreSpr.setText("Score: "+score, Color.RED, 2);
-            }
+                if (drop > 60 - (lvlNum - 1) * 10) {        //at higher lvl drop piece faster
+                    dropAll();
+                }
+                drop++;
+
+                if (lvlNum != 6) {
+                    lvlSpr.setText("Level: " + lvlNum, Color.CYAN, 2);        //update level
+                    scoreSpr.setText("Score: " + score, Color.CYAN, 2);       //update score
+                } else {
+                    //if max level set color to red and level to say max
+                    lvlSpr.setText("Level: MAX", Color.RED, 2);
+                    scoreSpr.setText("Score: " + score, Color.RED, 2);
+                }
 
 
+                //Copy the state of well[][] over to grid[][]
+                for (int i = 0; i < grid.length; i++) {
+                    for (int j = 0; j < grid[i].length; j++) {
+                        if (well[i][j] == 0) {
+                            grid[i][j].setImage(Empty);
+                        } else if (well[i][j] == 1) {
+                            if(grid[i][j].getImage() == Empty){
+                                if(prevPieceNum == 2)
+                                    grid[i][j].setImage(IPiece);
+                                else if(prevPieceNum == 3)
+                                    grid[i][j].setImage(JPiece);
+                                else if(prevPieceNum == 4)
+                                    grid[i][j].setImage(LPiece);
+                                else if(prevPieceNum == 5)
+                                    grid[i][j].setImage(OPiece);
+                                else if(prevPieceNum == 6)
+                                    grid[i][j].setImage(SPiece);
+                                else if(prevPieceNum == 7)
+                                    grid[i][j].setImage(TPiece);
+                                else if(prevPieceNum == 8)
+                                    grid[i][j].setImage(ZPiece);
 
-            //Copy the state of well[][] over to grid[][]
-            for (int i = 0; i < grid.length; i++) {
-                for (int j = 0; j < grid[i].length; j++) {
-                    if (well[i][j] == 0) {
-                        grid[i][j].setImage(Empty);
-                    } else {
-                        grid[i][j].setImage(Square);
+
+                            }
+                        } else if (well[i][j] == 2) {
+                            grid[i][j].setImage(IPiece);
+                        } else if (well[i][j] == 3) {
+                            grid[i][j].setImage(JPiece);
+                        } else if (well[i][j] == 4) {
+                            grid[i][j].setImage(LPiece);
+                        } else if (well[i][j] == 5) {
+                            grid[i][j].setImage(OPiece);
+                        } else if (well[i][j] == 6) {
+                            grid[i][j].setImage(SPiece);
+                        } else if (well[i][j] == 7) {
+                            grid[i][j].setImage(TPiece);
+                        } else if (well[i][j] == 8) {
+                            grid[i][j].setImage(ZPiece);
+                        }
                     }
                 }
+
+                //update the level number
+                if (score < 1000)
+                    lvlNum = 1;
+                else if (score < 2000)
+                    lvlNum = 2;
+                else if (score < 3000)
+                    lvlNum = 3;
+                else if (score < 4000)
+                    lvlNum = 4;
+                else if (score < 5000)
+                    lvlNum = 5;
+                else
+                    lvlNum = 6;
+
+
+
+
+            } else {
+                howToExit.setVisible(true);
+                howToExit.setText("Press B to exit", Color.RED, 3);
+                howToPlayAgain.setVisible(true);
+                howToPlayAgain.setText("Press A to play again", Color.RED, 3);
+                endGame();
             }
-
-            //update the level number
-            if(score < 1000)
-                lvlNum = 1;
-            else if(score < 2000)
-                lvlNum = 2;
-            else if(score < 3000)
-                lvlNum = 3;
-            else if(score < 4000)
-                lvlNum = 4;
-            else if(score < 5000)
-                lvlNum = 5;
-            else
-                lvlNum = 6;
-
-
-            if(drop > 60 - (lvlNum-1) * 10){        //at higher lvl drop piece faster
-                dropAll();
-            }
-            drop++;
-
-        } else {
-            howToExit.setVisible(true);
-            howToExit.setText("Press B to exit", Color.RED, 3);
-            howToPlayAgain.setVisible(true);
-            howToPlayAgain.setText("Press A to play again", Color.RED, 3);
-            endGame();
-        }
 
 
 
