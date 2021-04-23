@@ -4,11 +4,7 @@ import engine.Canvas;
 import menu.Menu;
 import engine.GameElement;
 import engine.Sprite;
-//import engine.SpriteClickable;
-//import org.w3c.dom.css.Rect;
 import engine.SpriteText;
-import menu.HighScoreTable;
-import menu.ScoreEntry;
 import util.ResourceLoader;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -16,9 +12,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
-//import java.awt.Point;
 
 public class PacmanTest implements GameElement, MouseMotionListener {
+    //region Sprites, Canvas, Menu
     Sprite backgroundspr;
     Sprite boardspr;
     Sprite pacmanspr;
@@ -28,40 +24,20 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     SpriteText gameoverspr;
     SpriteText namespr;
     SpriteText inputspr;
+    SpriteText ready;
     Menu m;
     Canvas c;
+    //endregion
 
-    //Game vars
+    //region Game vars
     int score = 0;
     int level = 1;
     boolean levelComplete = false;
+    int introLength = 200;
+    int intro = introLength;
     boolean game = true;
-
-    //Pacman vars
-    int x = 940;
-    int y = 765;
-    int speed = 3;
-    int width = 45;
-    int height = 45;
-    Rectangle pacmanR = new Rectangle(x, y, width, height);
-
-
-    //Blinky (red)
-    int redx = 950;
-    int redy = 525;
-    int redSpeed = 2;
-    String redLastDirection = "left";
-    String redLastLockDirection = "lockleft";
-    String redLastLockDirection2 = "lockup";
-    Random rand = new Random(123);
-    int redTargetX = x;
-    int redTargetY = y;
-    String redTarget = "pacman";
-    int redCounter = 0;
-    int redWidth = 45;
-    int redHeight = 45;
-    Rectangle redR = new Rectangle(redx, redy, redWidth, redHeight);
-    int redCoolDown = 400;
+    boolean gameOver = false;
+    //endregion
 
     //region Pellet variables
     int pelletNumberH1 = 24;
@@ -89,21 +65,91 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     ArrayList<Sprite> pelletList = new ArrayList<>();
     //endregion
 
-    //Boundaries
-    ArrayList<Rectangle> boundaryList = new ArrayList<>();
+    //region Power Pellets
+    ArrayList<Sprite> powerPelletList = new ArrayList<>();
+    Rectangle powerPelletR;
+    int powerPelletSize = 30;
+    boolean powerPelletCountDown = false;
+    int powerPelletStartTime = 800;
+    int powerPelletTime = powerPelletStartTime;
+    //endregion
 
-    //Put buffered images here
+    //region Boundaries
+    ArrayList<Rectangle> boundaryList = new ArrayList<>();
+    //endregion
+
+    //region Buffered Images
     BufferedImage neutral = ResourceLoader.getImage("pacman/circle.png");
     BufferedImage background = ResourceLoader.getImage("pacman/background.png");
     BufferedImage board = ResourceLoader.getImage("pacman/board.png");
     BufferedImage pellet = ResourceLoader.getImage("pacman/pellet.png");
     BufferedImage door = ResourceLoader.getImage("pacman/door.png");
+    BufferedImage scaredghost1 = ResourceLoader.getImage("pacman/scaredghost1.png");
+    BufferedImage scaredghost2 = ResourceLoader.getImage("pacman/scaredghost2.png");
+    BufferedImage eatenghost = ResourceLoader.getImage("pacman/eatenghost.png");
+    //endregion
 
+    //region Pacman vars
+    int x = 940;
+    int y = 765;
+    int speed = 3;
+    int width = 45;
+    int height = 45;
+    Rectangle pacmanR = new Rectangle(x, y, width, height);
+    BufferedImage pacmanright1 = ResourceLoader.getImage("pacman/pacmanright1.png");
+    BufferedImage pacmanright2 = ResourceLoader.getImage("pacman/pacmanright2.png");
+    BufferedImage pacmanleft1 = ResourceLoader.getImage("pacman/pacmanleft1.png");
+    BufferedImage pacmanleft2 = ResourceLoader.getImage("pacman/pacmanleft2.png");
+    BufferedImage pacmandown1 = ResourceLoader.getImage("pacman/pacmandown1.png");
+    BufferedImage pacmandown2 = ResourceLoader.getImage("pacman/pacmandown2.png");
+    BufferedImage pacmanup1 = ResourceLoader.getImage("pacman/pacmanup1.png");
+    BufferedImage pacmanup2 = ResourceLoader.getImage("pacman/pacmanup2.png");
+    //endregion
+
+    //region Animation vars
+    int animation = 0;
+    boolean ghostAnimationType = false;
+    int pacmanAnimationType = 0;
+    //endregion
+
+    //region Blinky (red)
+    int blinkyX = 950;
+    int blinkyY = 525;
+    int blinkyLastX = 0;
+    int blinkyLastY = 0;
+    int blinkySpeed = 2;
+    String blinkyLastDirection = "left";
+    String blinkyLastLockDirection = "lockleft";
+    String blinkyLastLockDirection2 = "lockup";
+    Random blinkyRand = new Random(123);
+    int blinkyTargetX = x;
+    int blinkyTargetY = y;
+    String blinkyTarget = "pacman";
+    int blinkyCounter = 0;
+    int blinkyWidth = 45;
+    int blinkyHeight = 45;
+    Rectangle blinkyR = new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight);
+    int blinkyCoolDown = 400;
+    boolean blinkyScared = false;
+    int blinkyEatenPause = 20;
+    BufferedImage blinkyright1 = ResourceLoader.getImage("pacman/blinkyright1.png");
+    BufferedImage blinkyright2 = ResourceLoader.getImage("pacman/blinkyright2.png");
+    BufferedImage blinkyleft1 = ResourceLoader.getImage("pacman/blinkyleft1.png");
+    BufferedImage blinkyleft2 = ResourceLoader.getImage("pacman/blinkyleft2.png");
+    BufferedImage blinkydown1 = ResourceLoader.getImage("pacman/blinkydown1.png");
+    BufferedImage blinkydown2 = ResourceLoader.getImage("pacman/blinkydown2.png");
+    BufferedImage blinkyup1 = ResourceLoader.getImage("pacman/blinkyup1.png");
+    BufferedImage blinkyup2 = ResourceLoader.getImage("pacman/blinkyup2.png");
+    //endregion
 
     public PacmanTest(Canvas c, Menu m) {
+
+        //region This
         this.c = c;
         this.m = m;
+        //endregion
 
+        //region Sprites
         //Background
         backgroundspr = new Sprite(background, 528, 0, 864, 1080, 0);
 
@@ -117,20 +163,24 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         scorespr = new SpriteText(924, 80, 200, 200, 2);
         scorespr.setText(""+score, Color.lightGray, 2);
 
+        //Ready
+        ready = new SpriteText(894, 604, 2);
+        ready.setText("Ready!", Color.yellow, 2.4);
+
         //Pacman
-        pacmanspr = new Sprite(neutral, x, y, width, height, 2);
+        pacmanspr = new Sprite(pacmanright1, x, y, width, height, 2);
 
         //Blinky (red)
-        redspr = new Sprite(neutral, redx, redy, redWidth, redHeight, 3);
-
+        redspr = new Sprite(blinkyup1, blinkyX, blinkyY, blinkyWidth, blinkyHeight, 3);
 
         //Game Over Sprites
-        namespr = new SpriteText(555, 800, 200, 200, 6);
+        namespr = new SpriteText(750, 800, 200, 200, 6);
         namespr.setVisible(false);
         inputspr = new SpriteText(924, 80, 200, 200, 6);
         inputspr.setVisible(false);
         gameoverspr = new SpriteText(595, 100, 500, 500, 6);
         gameoverspr.setVisible(false);
+        //endregion
 
         //region Pellets
         //Horizontal Lines always take precedence over vertical lines
@@ -246,6 +296,13 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         }
         //endregion
 
+        //region Power Pellets
+        powerPelletList.add(new Sprite(pellet, 575, 211, 30, 30, 2));
+        powerPelletList.add(new Sprite(pellet, 1325, 211, 30, 30, 2));
+        powerPelletList.add(new Sprite(pellet, 575, 775, 30, 30, 2));
+        powerPelletList.add(new Sprite(pellet, 1325, 775, 30, 30, 2));
+        //endregion
+
         //region Boundaries
         //Block1
         boundaryList.add(new Rectangle(628, 196, 80, 52));
@@ -345,22 +402,30 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
     @Override
     public void start() {
+
+        //region Put
         c.put(backgroundspr, "background");
         c.put(boardspr, "board");
         c.put(scorespr, "score");
         c.put(namespr, "name");
         c.put(gameoverspr, "gameover");
         c.put(inputspr, "inputname");
+        c.put(ready, "start");
         c.put(doorspr, "door");
         c.put(pacmanspr, "pacman");
         c.put(redspr, "Blinky");
+        //endregion
 
+        //region Pellets and PowerPellets
         for(int i = 0; i < pelletNumber; i++){
             c.put(pelletList.get(i), "pellet" + i);
 
         }
+        for(int i = 0; i < 4; i++){
+            c.put(powerPelletList.get(i), "powerPellet" + i);
 
-
+        }
+        //endregion
 
     }
 
@@ -372,79 +437,135 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     @Override
     public void update() {
 
+        if(intro > 0){
+            intro = intro - 1;
+            ready.setVisible(true);
+            game = false;
+        }else if(!gameOver){
+            game = true;
+            ready.setVisible(false);
+        }
+
+        //region Pacman Movement
         pacmanR = new Rectangle(x, y, width, height);
-
-        redR = new Rectangle(redx, redy, redWidth, redHeight);
-
-        //Pacman Movement
-        if(c.getKeysDown().contains('s') && blockCollideTestY(true, "pacman")){
-            y = y + speed;
-            //spr.setImage(down);
-        } else if(c.getKeysDown().contains('w') && blockCollideTestY(false, "pacman")){
-            y = y - speed;
-            //spr.setImage(up);
-        } else if(c.getKeysDown().contains('d') && blockCollideTestX(true, "pacman")){
-            x = x + speed;
-            //spr.setImage(right);
-        } else if(c.getKeysDown().contains('a') && blockCollideTestX(false, "pacman")){
-            x = x - speed;
-            //spr.setImage(left);
+        if(game) {
+            if (c.getKeysDown().contains('s') && blockCollideTestY(true, "pacman")) {
+                y = y + speed;
+                if (pacmanAnimationType == 0) {
+                    pacmanspr.setImage(pacmandown1);
+                } else if (pacmanAnimationType == 1) {
+                    pacmanspr.setImage(pacmandown2);
+                } else {
+                    pacmanspr.setImage(neutral);
+                }
+            } else if (c.getKeysDown().contains('w') && blockCollideTestY(false, "pacman")) {
+                y = y - speed;
+                if (pacmanAnimationType == 0) {
+                    pacmanspr.setImage(pacmanup1);
+                } else if (pacmanAnimationType == 1) {
+                    pacmanspr.setImage(pacmanup2);
+                } else {
+                    pacmanspr.setImage(neutral);
+                }
+            } else if (c.getKeysDown().contains('d') && blockCollideTestX(true, "pacman")) {
+                x = x + speed;
+                if (pacmanAnimationType == 0) {
+                    pacmanspr.setImage(pacmanright1);
+                } else if (pacmanAnimationType == 1) {
+                    pacmanspr.setImage(pacmanright2);
+                } else {
+                    pacmanspr.setImage(neutral);
+                }
+            } else if (c.getKeysDown().contains('a') && blockCollideTestX(false, "pacman")) {
+                x = x - speed;
+                if (pacmanAnimationType == 0) {
+                    pacmanspr.setImage(pacmanleft1);
+                } else if (pacmanAnimationType == 1) {
+                    pacmanspr.setImage(pacmanleft2);
+                } else {
+                    pacmanspr.setImage(neutral);
+                }
+            }
         }
+        //endregion
 
-
-        //Blinky movement
-        if(redCoolDown > 0){
-            redCoolDown = redCoolDown -1;
+        //region Animation
+        animation = animation +1;
+        if(animation % 10 == 0) ghostAnimationType = !ghostAnimationType;
+        if(animation % 5 == 0){
+            pacmanAnimationType = pacmanAnimationType + 1;
+            if(pacmanAnimationType > 2) pacmanAnimationType = 0;
         }
-        if(redCoolDown == 0){
-            if(redx > 942) redx = redx -1;
-            else if(redx < 942) redx = redx + 1;
-            else if(redy > 424) redy = redy - 1;
-            else if(redy < 424) redy = redy + 1;
-            else redCoolDown = -1;
+        //endregion
+
+        //region Blinky movement
+        blinkyR = new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight);
+        if(game) {
+            if (blinkyCoolDown > 0) {
+                blinkyCoolDown = blinkyCoolDown - 1;
+            }
+            if (blinkyCoolDown == 0) {
+                if (blinkyX > 942) blinkyX = blinkyX - 1;
+                else if (blinkyX < 942) blinkyX = blinkyX + 1;
+                else if (blinkyY > 424) blinkyY = blinkyY - 1;
+                else if (blinkyY < 424) blinkyY = blinkyY + 1;
+                else blinkyCoolDown = -1;
+            }
+            if (blinkyCoolDown == -1) {
+                blinkyLastX = blinkyX;
+                blinkyLastY = blinkyY;
+                blinkyLastDirection = blinkyMove(blinkyLastDirection);
+                if (blinkyLastX == blinkyX && blinkyLastY == blinkyY) {
+                    blinkyTarget = "pacman";
+                }
+            }
+            if (blinkyScared) {
+                blinkyTarget = "away";
+            }
         }
-        if(redCoolDown == -1) redLastDirection = blinkyMove(redLastDirection);
+//endregion
 
-
-        //Wrapping
+        //region Wrapping
         //Pacman
         //Left to right
         if(x < 540){
-
-            if(Math.abs(redx - x) < 300 && Math.abs(redy - y) < 200 && redTarget.equals("pacman")){
-                redTarget = "leftwrap";
-                redTargetX = 538;
-                redTargetY = 512;
+            //Blinky
+            if(Math.abs(blinkyX - x) < 300 && Math.abs(blinkyY - y) < 200 && blinkyTarget.equals("pacman")){
+                //Blinky
+                blinkyTarget = "leftwrap";
+                blinkyTargetX = 538;
+                blinkyTargetY = 512;
             }
             x = 1340;
         }
         //Right to left
         if(x > 1340){
-
-            if(Math.abs(redx - x) < 300 && Math.abs(redy - y) < 200 && redTarget.equals("pacman")){
-                redTarget = "rightwrap";
-                redTargetX = 1342;
-                redTargetY = 512;
+            //Blinky
+            if(Math.abs(blinkyX - x) < 300 && Math.abs(blinkyY - y) < 200 && blinkyTarget.equals("pacman")){
+                //Blinky
+                blinkyTarget = "rightwrap";
+                blinkyTargetX = 1342;
+                blinkyTargetY = 512;
             }
             x = 540;
         }
 
         //Blinky
         //Left to right
-        if(redx < 540){
-            redx = 1340;
-            if(redTarget.equals("leftwrap")) redTarget = "pacman";
+        if(blinkyX < 540){
+            blinkyX = 1340;
+            if(blinkyTarget.equals("leftwrap")) blinkyTarget = "pacman";
 
         }
         //Right to left
-        if(redx > 1340) {
-            redx = 540;
-            if(redTarget.equals("rightwrap")) redTarget = "pacman";
+        if(blinkyX > 1340) {
+            blinkyX = 540;
+            if(blinkyTarget.equals("rightwrap")) blinkyTarget = "pacman";
         }
 
+//endregion
 
-
-            //Pellets
+        //region Pellets
         for(int i = 0; i < pelletNumber; i++){
 
             pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
@@ -456,21 +577,84 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
 
         }
+        //endregion
 
-        //Pacman coordinates update
+        //region Power Pellets
+        for(int i = 0; i < 4; i++){
+
+            powerPelletR = new Rectangle(powerPelletList.get(i).getX(), powerPelletList.get(i).getY(), powerPelletSize, powerPelletSize);
+            if(pacmanR.intersects(powerPelletR) && powerPelletList.get(i).isVisible()){
+
+                powerPelletList.get(i).setVisible(false);
+                powerPelletTime = powerPelletStartTime;
+                powerPelletCountDown = true;
+               //Blinky
+                if(blinkyCoolDown == -1){
+                   blinkyScared = true;
+               }
+
+            }
+
+        }
+
+        //Blinky
+        if(powerPelletCountDown){
+            powerPelletTime = powerPelletTime - 1;
+            if(powerPelletTime < 0){
+                blinkyScared = false;
+
+            }
+
+        }
+//endregion
+
+        //region Eating Ghosts
+        //Blinky
+        if(pacmanR.intersects(new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight)) && blinkyScared && redspr.getImage() != eatenghost){
+
+            score = score + 200;
+            blinkyEatenPause = 20;
+            redspr.setImage(eatenghost);
+
+        }
+        if(redspr.getImage() == eatenghost){
+            blinkyCoolDown = 400;
+            if(blinkyEatenPause < 0){
+                blinkyScared = false;
+                blinkyTarget = "pacman";
+                redspr.setImage(blinkyup1);
+                blinkyX = 950;
+                blinkyY = 525;
+            }
+            blinkyEatenPause = blinkyEatenPause - 1;
+        }
+        //endregion
+
+        //region Pacman coordinates update
         pacmanspr.setX(x);
         pacmanspr.setY(y);
+        //endregion
 
-        //Update Score
-        scorespr.setText(""+score, Color.lightGray, 2);
+        //region Blinky coordinates update
+        redspr.setX(blinkyX);
+        redspr.setY(blinkyY);
+        if(blinkyTarget.equals("pacman")) blinkyTargetX = x;
+        if(blinkyTarget.equals("pacman")) blinkyTargetY = y;
+        if(blinkyTarget.equals("leftwrap")){
+            blinkyTargetX = 538;
+            blinkyTargetY = 512;
+        }
+        if(blinkyTarget.equals("rightwrap")){
+            blinkyTargetX = 1342;
+            blinkyTargetY = 512;
+        }
+        if(blinkyTarget.equals("away") && x > blinkyX) blinkyTargetX = x - 1000;
+        if(blinkyTarget.equals("away") && x < blinkyX) blinkyTargetX = x + 1000;
+        if(blinkyTarget.equals("away") && y < blinkyY) blinkyTargetY = y - 1000;
+        if(blinkyTarget.equals("away") && y > blinkyX) blinkyTargetY = y + 1000;
+        //endregion
 
-        //Blinky coordinates update
-        redspr.setX(redx);
-        redspr.setY(redy);
-        if(redTarget.equals("pacman")) redTargetX = x;
-        if(redTarget.equals("pacman")) redTargetY = y;
-
-        //Pellet Scanning
+        //region Pellet Scanning
         int collectedCount = 0;
         for(int i = 0; i < pelletNumber; i++){
 
@@ -485,13 +669,20 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             level = level + 1;
             levelReset();
         }
+//endregion
 
-        //GAME OVER
-        if(pacmanR.intersects(new Rectangle(redx, redy, redWidth, redHeight))){
+        //region Update Score
+        scorespr.setText(""+score, Color.lightGray, 2);
+        //endregion
+
+        //region GAME OVER
+        if(pacmanR.intersects(new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight)) && !blinkyScared){
+
+            gameOver = true;
 
             backgroundspr.setLayer(5);
             gameoverspr.setText("GAME OVER", Color.lightGray, 7);
-            namespr.setText("Submit a name and press enter", Color.lightGray, 2.4);
+            namespr.setText("PRESS SPACEBAR", Color.lightGray, 2.4);
             namespr.setVisible(true);
             inputspr.setVisible(true);
             gameoverspr.setVisible(true);
@@ -502,13 +693,13 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
             game = false;
 
-            if(c.getKeysDown().contains('a')) {
+            if(c.getKeysDown().contains(' ')) {
                 gameReset();
                 c.setElement("MENU");
             }
 
         }
-
+//endregion
 
 
     }
@@ -517,140 +708,140 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     //Blinky Direction deciding method
     public String blinkyMove(String lastDirection){
 
-        int xDifference = Math.abs(redTargetX-redx);
-        int yDifference = Math.abs(redTargetY-redy);
+        int xDifference = Math.abs(blinkyTargetX - blinkyX);
+        int yDifference = Math.abs(blinkyTargetY - blinkyY);
         int lockNumber = 160;
-        int randomDirection = rand.nextInt(2);
+        int randomDirection = blinkyRand.nextInt(2);
 
         //Lockdown
-        if(lastDirection.equals("lockdown") && redCounter < lockNumber){
+        if(lastDirection.equals("lockdown") && blinkyCounter < lockNumber){
 
-            if(redCounter == lockNumber-1){
-                redCounter = 0;
-                redLastLockDirection2 = redLastLockDirection;
-                redLastLockDirection = "lockdown";
+            if(blinkyCounter == lockNumber-1){
+                blinkyCounter = 0;
+                blinkyLastLockDirection2 = blinkyLastLockDirection;
+                blinkyLastLockDirection = "lockdown";
                 return "down";
             }
-            redCounter = redCounter + 1;
+            blinkyCounter = blinkyCounter + 1;
 
 
-            if(redx < redTargetX && blockCollideTestX(true, "blinky")) {
-                redx = redx + redSpeed;
-                redCounter = 0;
+            if(blinkyX < blinkyTargetX && blockCollideTestX(true, "blinky")) {
+                ghostMove("blinky", "right");
+                blinkyCounter = 0;
                 return "right";
-            } else if(redx > redTargetX && blockCollideTestX(false, "blinky")){
-                redx = redx - redSpeed;
-                redCounter = 0;
+            } else if(blinkyX > blinkyTargetX && blockCollideTestX(false, "blinky")){
+                ghostMove("blinky", "left");
+                blinkyCounter = 0;
                 return "left";
 
             } else if(blockCollideTestY(true, "blinky")) {
-                redy = redy + redSpeed;
+                ghostMove("blinky", "down");
                 return "lockdown";
             }
 
         }
 
         //Lockup
-        if(lastDirection.equals("lockup") && redCounter < lockNumber){
+        if(lastDirection.equals("lockup") && blinkyCounter < lockNumber){
 
-            if(redCounter == lockNumber-1){
-                redCounter = 0;
-                redLastLockDirection2 = redLastLockDirection;
-                redLastLockDirection = "lockup";
+            if(blinkyCounter == lockNumber-1){
+                blinkyCounter = 0;
+                blinkyLastLockDirection2 = blinkyLastLockDirection;
+                blinkyLastLockDirection = "lockup";
                 return "up";
             }
-            redCounter = redCounter + 1;
+            blinkyCounter = blinkyCounter + 1;
 
-            if(redx < redTargetX && blockCollideTestX(true, "blinky")) {
-                redx = redx + redSpeed;
-                redCounter = 0;
+            if(blinkyX < blinkyTargetX && blockCollideTestX(true, "blinky")) {
+                ghostMove("blinky", "right");
+                blinkyCounter = 0;
                 return "right";
-            } else if(redx > redTargetX && blockCollideTestX(false, "blinky")){
-                redx = redx - redSpeed;
-                redCounter = 0;
+            } else if(blinkyX > blinkyTargetX && blockCollideTestX(false, "blinky")){
+                ghostMove("blinky", "left");
+                blinkyCounter = 0;
                 return "left";
 
             } else if(blockCollideTestY(false, "blinky")){
-                redy = redy - redSpeed;
+                ghostMove("blinky", "up");
                 return "lockup";
             }
 
         }
 
         //Lockright
-        if(lastDirection.equals("lockright") && redCounter < lockNumber){
+        if(lastDirection.equals("lockright") && blinkyCounter < lockNumber){
 
-            if(redCounter == lockNumber-1){
-                redCounter = 0;
-                redLastLockDirection2 = redLastLockDirection;
-                redLastLockDirection = "lockright";
+            if(blinkyCounter == lockNumber-1){
+                blinkyCounter = 0;
+                blinkyLastLockDirection2 = blinkyLastLockDirection;
+                blinkyLastLockDirection = "lockright";
                 return "right";
             }
-            redCounter = redCounter + 1;
+            blinkyCounter = blinkyCounter + 1;
 
-            if(redy < redTargetY && blockCollideTestY(true, "blinky")) {
-                redy = redy + redSpeed;
-                redCounter = 0;
+            if(blinkyY < blinkyTargetY && blockCollideTestY(true, "blinky")) {
+                ghostMove("blinky", "down");
+                blinkyCounter = 0;
                 return "down";
-            } else if(redy > redTargetY && blockCollideTestY(false, "blinky")){
-                redy = redy - redSpeed;
-                redCounter = 0;
+            } else if(blinkyY > blinkyTargetY && blockCollideTestY(false, "blinky")){
+                ghostMove("blinky", "up");
+                blinkyCounter = 0;
                 return "up";
 
             } else if(blockCollideTestX(true, "blinky")){
-                redx = redx + redSpeed;
+                ghostMove("blinky", "right");
                 return "lockright";
             }
 
         }
 
         //Lockleft
-        if(lastDirection.equals("lockleft") && redCounter < lockNumber){
+        if(lastDirection.equals("lockleft") && blinkyCounter < lockNumber){
 
-            if(redCounter == lockNumber-1){
-                redCounter = 0;
-                redLastLockDirection2 = redLastLockDirection;
-                redLastLockDirection = "lockleft";
+            if(blinkyCounter == lockNumber-1){
+                blinkyCounter = 0;
+                blinkyLastLockDirection2 = blinkyLastLockDirection;
+                blinkyLastLockDirection = "lockleft";
                 return "left";
             }
-            redCounter = redCounter + 1;
+            blinkyCounter = blinkyCounter + 1;
 
-            if(redy < redTargetY && blockCollideTestY(true, "blinky")) {
-                redy = redy + redSpeed;
-                redCounter = 0;
+            if(blinkyY < blinkyTargetY && blockCollideTestY(true, "blinky")) {
+                ghostMove("blinky", "down");
+                blinkyCounter = 0;
                 return "down";
-            } else if(redy > redTargetY && blockCollideTestY(false, "blinky")){
-                redy = redy - redSpeed;
-                redCounter = 0;
+            } else if(blinkyY > blinkyTargetY && blockCollideTestY(false, "blinky")){
+                ghostMove("blinky", "up");
+                blinkyCounter = 0;
                 return "up";
 
             } else if(blockCollideTestX(false, "blinky")) {
-                redx = redx - redSpeed;
+                ghostMove("blinky", "left");
                 return "lockleft";
             }
 
         }
 
         //Down
-        if(yDifference > xDifference && redy < redTargetY){
+        if(yDifference > xDifference && blinkyY < blinkyTargetY){
 
             if(blockCollideTestY(true, "blinky")) {
-                redy = redy + redSpeed;
+                ghostMove("blinky", "down");
                 return "down";
-            }else if(redx < redTargetX) {
+            }else if(blinkyX < blinkyTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
-                    redx = redx + redSpeed;
-                    return "right";
+
+                    return "lockright";
                 } else {
                     if(randomDirection == 0) return "lockleft";
                     else return "lockup";
                 }
-            }else if(redx > redTargetX) {
+            }else if(blinkyX > blinkyTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
-                    redx = redx - redSpeed;
-                    return "left";
+
+                    return "lockleft";
                 }else {
                     if(randomDirection == 0) return "lockright";
                     else return "lockup";
@@ -661,25 +852,25 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Up
-        else if(yDifference > xDifference && redy > redTargetY){
+        else if(yDifference > xDifference && blinkyY > blinkyTargetY){
 
             if(blockCollideTestY(false, "blinky")){
-                redy = redy - redSpeed;
+                ghostMove("blinky", "up");
                 return "up";
-            }else if(redx < redTargetX) {
+            }else if(blinkyX < blinkyTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
-                    redx = redx + redSpeed;
-                    return "right";
+
+                    return "lockright";
                 } else {
                     if(randomDirection == 0) return "lockdown";
                     else return "lockleft";
                 }
-            }else if(redx > redTargetX) {
+            }else if(blinkyX > blinkyTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
-                    redx = redx - redSpeed;
-                    return "left";
+
+                    return "lockleft";
                 } else {
                     if(randomDirection == 0) return "lockright";
                     else return "lockdown";
@@ -691,25 +882,25 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         }
         //Right
-        else if(xDifference > yDifference && redx < redTargetX){
+        else if(xDifference > yDifference && blinkyX < blinkyTargetX){
 
             if(blockCollideTestX(true, "blinky")){
-                redx = redx + redSpeed;
+                ghostMove("blinky", "right");
                 return "right";
-            }else if(redy < redTargetY) {
+            }else if(blinkyY < blinkyTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
-                    redy = redy + redSpeed;
-                    return "down";
+
+                    return "lockdown";
                 } else {
                     if(randomDirection == 0) return "lockup";
                     else return "lockleft";
                 }
-            }else if(redy > redTargetY) {
+            }else if(blinkyY > blinkyTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
-                    redy = redy - redSpeed;
-                    return "up";
+
+                    return "lockup";
                 } else {
                     if(randomDirection == 0) return "lockdown";
                     else return "lockleft";
@@ -720,25 +911,25 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Left
-        else if(xDifference > yDifference && redx > redTargetX){
+        else if(xDifference > yDifference && blinkyX > blinkyTargetX){
 
             if(blockCollideTestX(false, "blinky")) {
-                redx = redx - redSpeed;
+                ghostMove("blinky", "left");
                 return "left";
-            }else if(redy < redTargetY) {
+            }else if(blinkyY < blinkyTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
-                    redy = redy + redSpeed;
-                    return "down";
+
+                    return "lockdown";
                 } else {
                     if(randomDirection == 0) return "lockright";
                     else return "lockup";
                 }
-            }else if(redy > redTargetY) {
+            }else if(blinkyY > blinkyTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
-                    redy = redy - redSpeed;
-                    return "up";
+
+                    return "lockup";
                 } else {
                     if(randomDirection == 0) return "lockright";
                     else return "lockdown";
@@ -749,82 +940,70 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             }
         }
         //Down
-         else if(redy < redTargetY){
+         else if(blinkyY < blinkyTargetY){
 
             if(blockCollideTestY(true, "blinky")) {
-                redy = redy + redSpeed;
+                ghostMove("blinky", "down");
                 return "down";
-            }else if(redx < redTargetX) {
-
-                if (blockCollideTestX(true, "blinky")) {
-                    redx = redx + redSpeed;
-                    return "right";
-                }
-            }else if(redx > redTargetX) {
-
-                if (blockCollideTestX(false, "blinky")) {
-                    redx = redx - redSpeed;
-                    return "left";
-                }
             }
         }
         //Up
-        else if(redy > redTargetY){
+        else if(blinkyY > blinkyTargetY){
 
             if(blockCollideTestY(false, "blinky")){
-                redy = redy - redSpeed;
+                ghostMove("blinky", "up");
                 return "up";
-            }else if(redx < redTargetX) {
+            }else if(blinkyX < blinkyTargetX) {
 
                 if (blockCollideTestX(true, "blinky")) {
-                    redx = redx + redSpeed;
+                    ghostMove("blinky", "right");
                     return "right";
                 }
-            }else if(redx > redTargetX) {
+            }else if(blinkyX > blinkyTargetX) {
 
                 if (blockCollideTestX(false, "blinky")) {
-                    redx = redx - redSpeed;
+                    ghostMove("blinky", "left");
                     return "left";
                 }
             }
 
         }
         //Right
-        else if(redx < redTargetX){
+        else if(blinkyX < blinkyTargetX){
 
             if(blockCollideTestX(true, "blinky")){
-                redx = redx + redSpeed;
+                ghostMove("blinky", "right");
                 return "right";
-            }else if(redy < redTargetY) {
+            }else if(blinkyY < blinkyTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
-                    redy = redy + redSpeed;
+                    ghostMove("blinky", "down");
                     return "down";
                 }
-            }else if(redy > redTargetY) {
+            }else if(blinkyY > blinkyTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
-                    redy = redy - redSpeed;
+                    ghostMove("blinky", "up");
                     return "up";
                 }
             }
         }
         //Left
-        else if(redx > redTargetX){
+        else if(blinkyX > blinkyTargetX){
 
             if(blockCollideTestX(false, "blinky")) {
-                redx = redx - redSpeed;
+                ghostMove("blinky", "left");
                 return "left";
-            }else if(redy < redTargetY) {
+            }else if(blinkyY < blinkyTargetY) {
 
                 if (blockCollideTestY(true, "blinky")) {
-                    redy = redy + redSpeed;
+                    ghostMove("blinky", "down");
                     return "down";
                 }
-            }else if(redy > redTargetY) {
+            }else if(blinkyY > blinkyTargetY) {
 
                 if (blockCollideTestY(false, "blinky")) {
-                    redy = redy - redSpeed;
+                    ghostMove("blinky", "up");
                     return "up";
                 }
             }
@@ -834,14 +1013,71 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
     }
 
+    //Generic Move Method
+    public void ghostMove(String ghost, String direction){
+
+        if(ghost.equals("blinky")){
+            if(direction.equals("down")){
+                blinkyY = blinkyY + blinkySpeed;
+                if(ghostAnimationType) {
+                    if(!blinkyScared) redspr.setImage(blinkydown1);
+                    else redspr.setImage(scaredghost1);
+                }
+                else {
+                    if(!blinkyScared) redspr.setImage(blinkydown2);
+                    else redspr.setImage(scaredghost2);
+                }
+            }
+            if(direction.equals("up")){
+                blinkyY = blinkyY - blinkySpeed;
+                if(ghostAnimationType) {
+                    if(!blinkyScared) redspr.setImage(blinkyup1);
+                    else redspr.setImage(scaredghost1);
+                }
+                else {
+                    if(!blinkyScared) redspr.setImage(blinkyup2);
+                    else redspr.setImage(scaredghost2);
+                }
+            }
+            if(direction.equals("right")){
+                blinkyX = blinkyX + blinkySpeed;
+                if(ghostAnimationType) {
+                    if(!blinkyScared) redspr.setImage(blinkyright1);
+                    else redspr.setImage(scaredghost1);
+                }
+                else {
+                    if(!blinkyScared) redspr.setImage(blinkyright2);
+                    else redspr.setImage(scaredghost2);
+                }
+            }
+            if(direction.equals("left")){
+                blinkyX = blinkyX - blinkySpeed;
+                if(ghostAnimationType) {
+                    if(!blinkyScared) redspr.setImage(blinkyleft1);
+                    else redspr.setImage(scaredghost1);
+                }
+                else {
+                    if(!blinkyScared) redspr.setImage(blinkyleft2);
+                    else redspr.setImage(scaredghost2);
+                }
+            }
+        }
+
+
+    }
 
     public void gameReset(){
+        //Reset level
         levelReset();
-        game = true;
+
+        //Reset game
         score = 0;
+        animation = 0;
         level = 1;
         levelComplete = false;
+        gameOver = false;
 
+        //Undo game over
         backgroundspr.setLayer(0);
         namespr.setVisible(false);
         inputspr.setVisible(false);
@@ -852,6 +1088,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
     public void levelReset(){
 
+        intro = introLength;
         levelComplete = false;
 
         //Pacman vars
@@ -860,33 +1097,43 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         speed = 3;
         width = 45;
         height = 45;
+        pacmanspr.setImage(pacmanright1);
+
+        //Animation
+        animation = 0;
+        ghostAnimationType = false;
+        pacmanAnimationType = 0;
 
         //Blinky (red)
-        redx = 950;
-        redy = 525;
-        redSpeed = 2;
-        redLastDirection = "left";
-        redLastLockDirection = "lockleft";
-        redLastLockDirection2 = "lockup";
-        redTargetX = x;
-        redTargetY = y;
-        redTarget = "pacman";
-        redCounter = 0;
-        redWidth = 45;
-        redHeight = 45;
-        redCoolDown = 400;
+        blinkyX = 950;
+        blinkyY = 525;
+        blinkySpeed = 2;
+        blinkyLastDirection = "left";
+        blinkyLastLockDirection = "lockleft";
+        blinkyLastLockDirection2 = "lockup";
+        blinkyTargetX = x;
+        blinkyTargetY = y;
+        blinkyTarget = "pacman";
+        blinkyCounter = 0;
+        blinkyWidth = 45;
+        blinkyHeight = 45;
+        blinkyCoolDown = 400;
+        blinkyScared = false;
+        redspr.setImage(blinkyup1);
+        blinkyEatenPause = 20;
 
         //Pellets
         for(int i = 0; i < pelletNumber; i++){
-
-
-            if(!pelletList.get(i).isVisible()){
-
+            if(!pelletList.get(i).isVisible()) {
                 pelletList.get(i).setVisible(true);
-
-
             }
+        }
 
+        //Powerpellets
+        for(int i = 0; i < 4; i++) {
+            if (!powerPelletList.get(i).isVisible()) {
+                powerPelletList.get(i).setVisible(true);
+            }
         }
 
     }
@@ -903,8 +1150,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         }
 
         if(name.equals("blinky")) {
-            XT = new Rectangle(redx + redSpeed, redy, redWidth, redHeight);
-            XF = new Rectangle(redx - redSpeed, redy, redWidth, redHeight);
+            XT = new Rectangle(blinkyX + blinkySpeed, blinkyY, blinkyWidth, blinkyHeight);
+            XF = new Rectangle(blinkyX - blinkySpeed, blinkyY, blinkyWidth, blinkyHeight);
         }
 
         //True direction is up and false is down
@@ -923,8 +1170,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         }
 
         if(name.equals("blinky")) {
-            YT = new Rectangle(redx, redy  + redSpeed, redWidth, redHeight);
-            YF = new Rectangle(redx, redy - redSpeed, redWidth, redHeight);
+            YT = new Rectangle(blinkyX, blinkyY + blinkySpeed, blinkyWidth, blinkyHeight);
+            YF = new Rectangle(blinkyX, blinkyY - blinkySpeed, blinkyWidth, blinkyHeight);
         }
 
         //True direction is up and false is down
@@ -965,9 +1212,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Coordinates for testing
-        //int x=e.getX();
-        //int y=e.getY();
-        //System.out.println(x+","+y);//these co-ords are relative to the component
+        int x=e.getX();
+        int y=e.getY();
+        System.out.println(x+","+y);//these co-ords are relative to the component
     }
 
 
