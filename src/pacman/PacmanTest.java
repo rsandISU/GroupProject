@@ -1,11 +1,11 @@
 package pacman;
 
+import engine.*;
 import engine.Canvas;
 import menu.Menu;
-import engine.GameElement;
-import engine.Sprite;
-import engine.SpriteText;
 import util.ResourceLoader;
+import util.SoundLoader;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -29,53 +29,40 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     Canvas c;
     //endregion
 
-    //region Game vars
-    int score = 0;
-    int level = 1;
-    boolean levelComplete = false;
-    int introLength = 200;
-    int intro = introLength;
-    boolean game = true;
-    boolean gameOver = false;
+    //region Sounds
+
+    private Soundable introMusic = SoundLoader.getSound("pacman/introsong.wav");
+    private Soundable ghostSiren = SoundLoader.getSound("pacman/ghostsiren.wav");
+    private Soundable waka = SoundLoader.getSound("pacman/waka.wav");
+    private Soundable ghostEat = SoundLoader.getSound("pacman/ghosteat.wav");
+    private Soundable death = SoundLoader.getSound("pacman/death.wav");
     //endregion
 
-    //region Pellet variables
-    int pelletNumberH1 = 24;
-    int pelletNumberH2 = 26;
-    int pelletNumberH3 = 20;
-    int pelletNumberH4 = 24;
-    int pelletNumberH5 = 18;
-    int pelletNumberH6 = 20;
-    int pelletNumberH7 = 26;
-    int pelletNumberV1 = 8;
-    int pelletNumberV2 = 2;
-    int pelletNumberV3 = 20;
-    int pelletNumberV4 = 4;
-    int pelletNumberV5 = 7;
-    int pelletNumberV6 = 7;
-    int pelletNumberV7 = 4;
-    int pelletNumberV8 = 20;
-    int pelletNumberV9 = 2;
-    int pelletNumberV10 = 8;
-    int pelletNumber = 240;
-    int pelletSize = 10;
-    int pelletDistanceX = 30;
-    int pelletDistanceY = 28;
-    Rectangle pelletR;
-    ArrayList<Sprite> pelletList = new ArrayList<>();
+    //region Game vars
+    private int score = 0;
+    private int level = 1;
+    private boolean levelComplete = false;
+    private final int introLength = 270;
+    private int intro = introLength;
+    private boolean game = true;
+    private boolean gameOver = false;
+    //endregion
+
+    //region Pellets
+    private final int pelletNumber = 240;
+    private final int pelletSize = 10;
+    private final ArrayList<Sprite> pelletList = new ArrayList<>();
     //endregion
 
     //region Power Pellets
-    ArrayList<Sprite> powerPelletList = new ArrayList<>();
-    Rectangle powerPelletR;
-    int powerPelletSize = 30;
-    boolean powerPelletCountDown = false;
-    int powerPelletStartTime = 800;
-    int powerPelletTime = powerPelletStartTime;
+    private final ArrayList<Sprite> powerPelletList = new ArrayList<>();
+    private boolean powerPelletCountDown = false;
+    private int powerPelletStartTime = 800;
+    private int powerPelletTime = powerPelletStartTime;
     //endregion
 
     //region Boundaries
-    ArrayList<Rectangle> boundaryList = new ArrayList<>();
+    private final ArrayList<Rectangle> boundaryList = new ArrayList<>();
     //endregion
 
     //region Buffered Images
@@ -90,12 +77,14 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     //endregion
 
     //region Pacman vars
-    int x = 940;
-    int y = 765;
-    int speed = 3;
-    int width = 45;
-    int height = 45;
-    Rectangle pacmanR = new Rectangle(x, y, width, height);
+    private int x = 940;
+    private int y = 765;
+    private int speed = 3;
+    private int width = 45;
+    private int height = 45;
+    private Rectangle pacmanR = new Rectangle(x, y, width, height);
+    int deathCountStart = 80;
+    int deathCount = 0;
     BufferedImage pacmanright1 = ResourceLoader.getImage("pacman/pacmanright1.png");
     BufferedImage pacmanright2 = ResourceLoader.getImage("pacman/pacmanright2.png");
     BufferedImage pacmanleft1 = ResourceLoader.getImage("pacman/pacmanleft1.png");
@@ -104,34 +93,45 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     BufferedImage pacmandown2 = ResourceLoader.getImage("pacman/pacmandown2.png");
     BufferedImage pacmanup1 = ResourceLoader.getImage("pacman/pacmanup1.png");
     BufferedImage pacmanup2 = ResourceLoader.getImage("pacman/pacmanup2.png");
+    BufferedImage pacmandeath1 = ResourceLoader.getImage("pacman/pacmandeath1.png");
+    BufferedImage pacmandeath2 = ResourceLoader.getImage("pacman/pacmandeath2.png");
+    BufferedImage pacmandeath3 = ResourceLoader.getImage("pacman/pacmandeath3.png");
+    BufferedImage pacmandeath4 = ResourceLoader.getImage("pacman/pacmandeath4.png");
+    BufferedImage pacmandeath5 = ResourceLoader.getImage("pacman/pacmandeath5.png");
+    BufferedImage pacmandeath6 = ResourceLoader.getImage("pacman/pacmandeath6.png");
+    BufferedImage pacmandeath7 = ResourceLoader.getImage("pacman/pacmandeath7.png");
+    BufferedImage pacmandeath8 = ResourceLoader.getImage("pacman/pacmandeath8.png");
+    BufferedImage pacmandeath9 = ResourceLoader.getImage("pacman/pacmandeath9.png");
+    BufferedImage pacmandeath10 = ResourceLoader.getImage("pacman/pacmandeath10.png");
+    BufferedImage pacmandeath11 = ResourceLoader.getImage("pacman/pacmandeath11.png");
     //endregion
 
     //region Animation vars
-    int animation = 0;
-    boolean ghostAnimationType = false;
-    int pacmanAnimationType = 0;
+    private int animation = 0;
+    private boolean ghostAnimationType = false;
+    private int pacmanAnimationType = 0;
     //endregion
 
     //region Blinky (red)
-    int blinkyX = 950;
-    int blinkyY = 525;
-    int blinkyLastX = 0;
-    int blinkyLastY = 0;
-    int blinkySpeed = 2;
-    String blinkyLastDirection = "left";
-    String blinkyLastLockDirection = "lockleft";
+    private int blinkyX = 950;
+    private int blinkyY = 525;
+    private int blinkyLastX = 0;
+    private int blinkyLastY = 0;
+    private int blinkySpeed = 2;
+    private String blinkyLastDirection = "left";
+    private String blinkyLastLockDirection = "lockleft";
     String blinkyLastLockDirection2 = "lockup";
-    Random blinkyRand = new Random(123);
-    int blinkyTargetX = x;
-    int blinkyTargetY = y;
-    String blinkyTarget = "pacman";
-    int blinkyCounter = 0;
-    int blinkyWidth = 45;
-    int blinkyHeight = 45;
+    private final Random blinkyRand = new Random(123);
+    private int blinkyTargetX = x;
+    private int blinkyTargetY = y;
+    private String blinkyTarget = "pacman";
+    private int blinkyCounter = 0;
+    private int blinkyWidth = 45;
+    private int blinkyHeight = 45;
     Rectangle blinkyR = new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight);
-    int blinkyCoolDown = 400;
-    boolean blinkyScared = false;
-    int blinkyEatenPause = 20;
+    private int blinkyCoolDown = 400;
+    private boolean blinkyScared = false;
+    private int blinkyEatenPause = 20;
     BufferedImage blinkyright1 = ResourceLoader.getImage("pacman/blinkyright1.png");
     BufferedImage blinkyright2 = ResourceLoader.getImage("pacman/blinkyright2.png");
     BufferedImage blinkyleft1 = ResourceLoader.getImage("pacman/blinkyleft1.png");
@@ -186,47 +186,56 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //Horizontal Lines always take precedence over vertical lines
         //H1 and V1 both start at the top left corner
         //Horizontal Line 1
-        for(int i = 0; i < pelletNumberH1+2; i++){
+        //Pellet variables
+        int pelletNumberH1 = 24;
+        int pelletDistanceX = 30;
+        for(int i = 0; i < pelletNumberH1 +2; i++){
 
             if(i != 12 && i != 13)
             pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 165, pelletSize, pelletSize, 2));
 
         }
         //Horizontal Line 2
+        int pelletNumberH2 = 26;
         for(int i = 0; i < pelletNumberH2; i++){
 
             pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 279, pelletSize, pelletSize, 2));
 
         }
         //Horizontal Line 3
-        for(int i = 0; i < pelletNumberH3+6; i++){
+        int pelletNumberH3 = 20;
+        for(int i = 0; i < pelletNumberH3 +6; i++){
 
             if(i != 6 && i != 7 && i != 12 && i != 13 && i != 18 && i!= 19) {
                 pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 360, pelletSize, pelletSize, 2));
             }
         }
         //Horizontal Line 4
-        for(int i = 0; i < pelletNumberH4+2; i++){
+        int pelletNumberH4 = 24;
+        for(int i = 0; i < pelletNumberH4 +2; i++){
 
             if(i != 12 && i != 13) {
                 pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 699, pelletSize, pelletSize, 2));
             }
         }
         //Horizontal Line 5
-        for(int i = 0; i < pelletNumberH5+8; i++){
+        int pelletNumberH5 = 18;
+        for(int i = 0; i < pelletNumberH5 +8; i++){
 
             if(i != 0 && i != 3 && i != 4 && i != 12 && i != 13 && i != 21 && i != 22 && i != 25) {
                 pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 783, pelletSize, pelletSize, 2));
             }
         }
         //Horizontal Line 6
-        for(int i = 0; i < pelletNumberH6+6; i++){
+        int pelletNumberH6 = 20;
+        for(int i = 0; i < pelletNumberH6 +6; i++){
 
             if(i != 6 && i != 7 && i != 12 && i != 13 && i != 18 && i!= 19) {
                 pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 867, pelletSize, pelletSize, 2));
             }
         }
         //Horizontal Line 7
+        int pelletNumberH7 = 26;
         for(int i = 0; i < pelletNumberH7; i++){
 
                 pelletList.add(new Sprite(pellet, 585 + (pelletDistanceX * i), 948, pelletSize, pelletSize, 2));
@@ -235,61 +244,72 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
 
         //Vertical Line 1
-        for(int i = 0; i < pelletNumberV1+21; i++){
+        int pelletNumberV1 = 8;
+        int pelletDistanceY = 28;
+        for(int i = 0; i < pelletNumberV1 +21; i++){
             if(i == 1 || i == 3 || i == 5 || i == 6 || i == 27 || i == 26 || i == 21 || i == 20) {
                 pelletList.add(new Sprite(pellet, 585, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 2
-        for(int i = 0; i < pelletNumberV2+27; i++){
+        int pelletNumberV2 = 2;
+        for(int i = 0; i < pelletNumberV2 +27; i++){
             if(i == 24 || i == 23) {
                 pelletList.add(new Sprite(pellet, 645, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 3
-        for(int i = 0; i < pelletNumberV3+9; i++){
+        int pelletNumberV3 = 20;
+        for(int i = 0; i < pelletNumberV3 +9; i++){
             if(i != 0 && i != 4 && i != 7 && i != 19 && i != 22 && i != 25 && i != 26 && i != 27 && i != 28)
             pelletList.add(new Sprite(pellet, 735, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
 
         }
         //Vertical Line 4
-        for(int i = 0; i < pelletNumberV4+25; i++){
+        int pelletNumberV4 = 4;
+        for(int i = 0; i < pelletNumberV4 +25; i++){
             if(i == 5 || i == 6 || i == 23 || i == 24) {
                 pelletList.add(new Sprite(pellet, 825, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 5
-        for(int i = 0; i < pelletNumberV5+22; i++){
+        int pelletNumberV5 = 7;
+        for(int i = 0; i < pelletNumberV5 +22; i++){
             if(i == 1 || i == 2 || i == 3 || i == 27 || i == 26 || i == 21 || i == 20) {
                 pelletList.add(new Sprite(pellet, 915, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 6
-        for(int i = 0; i < pelletNumberV6+22; i++){
+        int pelletNumberV6 = 7;
+        for(int i = 0; i < pelletNumberV6 +22; i++){
             if(i == 1 || i == 2 || i == 3 || i == 27 || i == 26 || i == 21 || i == 20) {
                 pelletList.add(new Sprite(pellet, 1005, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 7
-        for(int i = 0; i < pelletNumberV7+25; i++){
+        int pelletNumberV7 = 4;
+        for(int i = 0; i < pelletNumberV7 +25; i++){
             if(i == 5 || i == 6 || i == 23 || i == 24) {
                 pelletList.add(new Sprite(pellet, 1095, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 8
-        for(int i = 0; i < pelletNumberV8+9; i++){
+        int pelletNumberV8 = 20;
+        for(int i = 0; i < pelletNumberV8 +9; i++){
             if(i != 0 && i != 4 && i != 7 && i != 19 && i != 22 && i != 25 && i != 26 && i != 27 && i != 28)
                 pelletList.add(new Sprite(pellet, 1185, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
 
         }
         //Vertical Line 9
-        for(int i = 0; i < pelletNumberV9+27; i++){
+        int pelletNumberV9 = 2;
+        for(int i = 0; i < pelletNumberV9 +27; i++){
             if(i == 24 || i == 23) {
                 pelletList.add(new Sprite(pellet, 1275, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
         }
         //Vertical Line 10
-        for(int i = 0; i < pelletNumberV10+21; i++){
+        int pelletNumberV10 = 8;
+        for(int i = 0; i < pelletNumberV10 +21; i++){
             if(i == 1 || i == 3 || i == 5 || i == 6 || i == 27 || i == 26 || i == 21 || i == 20) {
                 pelletList.add(new Sprite(pellet, 1335, 165 + (pelletDistanceY * i), pelletSize, pelletSize, 2));
             }
@@ -437,14 +457,20 @@ public class PacmanTest implements GameElement, MouseMotionListener {
     @Override
     public void update() {
 
+        //region Intro
         if(intro > 0){
             intro = intro - 1;
             ready.setVisible(true);
             game = false;
+            if(!introMusic.clipPlaying()){
+                introMusic.play();
+            }
         }else if(!gameOver){
             game = true;
+            introMusic.haltClip();
             ready.setVisible(false);
         }
+        //endregion
 
         //region Pacman Movement
         pacmanR = new Rectangle(x, y, width, height);
@@ -514,7 +540,9 @@ public class PacmanTest implements GameElement, MouseMotionListener {
             if (blinkyCoolDown == -1) {
                 blinkyLastX = blinkyX;
                 blinkyLastY = blinkyY;
+                //This is the actual movement line
                 blinkyLastDirection = blinkyMove(blinkyLastDirection);
+                if(!ghostSiren.clipPlaying()) ghostSiren.play();
                 if (blinkyLastX == blinkyX && blinkyLastY == blinkyY) {
                     blinkyTarget = "pacman";
                 }
@@ -523,7 +551,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
                 blinkyTarget = "away";
             }
         }
-//endregion
+        //endregion
 
         //region Wrapping
         //Pacman
@@ -568,9 +596,10 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //region Pellets
         for(int i = 0; i < pelletNumber; i++){
 
-            pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
+            Rectangle pelletR = new Rectangle(pelletList.get(i).getX(), pelletList.get(i).getY(), pelletSize, pelletSize);
             if(pacmanR.intersects(pelletR) && pelletList.get(i).isVisible()){
 
+                if(!waka.clipPlaying()) waka.play();
                 pelletList.get(i).setVisible(false);
                 score = score + 10;
 
@@ -582,7 +611,8 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //region Power Pellets
         for(int i = 0; i < 4; i++){
 
-            powerPelletR = new Rectangle(powerPelletList.get(i).getX(), powerPelletList.get(i).getY(), powerPelletSize, powerPelletSize);
+            int powerPelletSize = 30;
+            Rectangle powerPelletR = new Rectangle(powerPelletList.get(i).getX(), powerPelletList.get(i).getY(), powerPelletSize, powerPelletSize);
             if(pacmanR.intersects(powerPelletR) && powerPelletList.get(i).isVisible()){
 
                 powerPelletList.get(i).setVisible(false);
@@ -613,6 +643,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         if(pacmanR.intersects(new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight)) && blinkyScared && redspr.getImage() != eatenghost){
 
             score = score + 200;
+            ghostEat.play();
             blinkyEatenPause = 20;
             redspr.setImage(eatenghost);
 
@@ -678,28 +709,66 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         //region GAME OVER
         if(pacmanR.intersects(new Rectangle(blinkyX, blinkyY, blinkyWidth, blinkyHeight)) && !blinkyScared){
 
-            gameOver = true;
-
-            backgroundspr.setLayer(5);
-            gameoverspr.setText("GAME OVER", Color.lightGray, 7);
-            namespr.setText("PRESS SPACEBAR", Color.lightGray, 2.4);
-            namespr.setVisible(true);
-            inputspr.setVisible(true);
-            gameoverspr.setVisible(true);
-
             if(game){
                 m.addPacmanScore(score);
             }
 
-            game = false;
+            if(!gameOver) deathCount = deathCountStart;
 
-            if(c.getKeysDown().contains(' ')) {
-                gameReset();
-                c.setElement("MENU");
+            game = false;
+            gameOver = true;
+
+
+            if(deathCount > 0){
+            pacmanspr.setImage(pacmandeath1);
+                if(deathCount > 75){
+                    pacmanspr.setImage(pacmandeath2);
+                }else if(deathCount > 68) {
+                    pacmanspr.setImage(pacmandeath3);
+                }else if(deathCount > 61) {
+                    pacmanspr.setImage(pacmandeath4);
+                }else if(deathCount > 54) {
+                    pacmanspr.setImage(pacmandeath5);
+                }else if(deathCount > 47) {
+                    pacmanspr.setImage(pacmandeath6);
+                }else if(deathCount > 40) {
+                    pacmanspr.setImage(pacmandeath7);
+                }else if(deathCount > 33) {
+                    pacmanspr.setImage(pacmandeath8);
+                }else if(deathCount > 26) {
+                    pacmanspr.setImage(pacmandeath9);
+                }else if(deathCount > 19) {
+                    pacmanspr.setImage(pacmandeath10);
+                }else if(deathCount > 12) {
+                    pacmanspr.setImage(pacmandeath11);
+                }else if(deathCount > 5) {
+                    pacmanspr.setVisible(false);
+                }
+
+
+                    if(!death.clipPlaying()) death.play();
+                deathCount = deathCount - 1;
+
+            }else {
+
+
+
+                backgroundspr.setLayer(5);
+                gameoverspr.setText("GAME OVER", Color.lightGray, 7);
+                namespr.setText("PRESS SPACEBAR", Color.lightGray, 2.4);
+                namespr.setVisible(true);
+                inputspr.setVisible(true);
+                gameoverspr.setVisible(true);
+
+
+                if (c.getKeysDown().contains(' ')) {
+                    gameReset();
+                    c.setElement("MENU");
+                }
             }
 
         }
-//endregion
+        //endregion
 
 
     }
@@ -1076,12 +1145,14 @@ public class PacmanTest implements GameElement, MouseMotionListener {
         level = 1;
         levelComplete = false;
         gameOver = false;
+        powerPelletStartTime = 800;
 
         //Undo game over
         backgroundspr.setLayer(0);
         namespr.setVisible(false);
         inputspr.setVisible(false);
         gameoverspr.setVisible(false);
+        pacmanspr.setVisible(true);
 
 
     }
@@ -1090,7 +1161,7 @@ public class PacmanTest implements GameElement, MouseMotionListener {
 
         intro = introLength;
         levelComplete = false;
-
+        powerPelletStartTime = Math.max(20, powerPelletStartTime - (level * 20));
         //Pacman vars
         x = 940;
         y = 765;
