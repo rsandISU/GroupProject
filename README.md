@@ -3,7 +3,7 @@
 ## A collection of the classic games PACMAN and TETRIS
 
 ### TETRIS
-- Each piece is made up of individual blocks that can move and rotate
+- The goal of Tetris is to complete rows and not let the pieces reach the top of the screen
 - Gameplay is very similar to the classic game with some additions 
         (levels, better graphics, and a "fun mode" on the max level)
 ### PACMAN
