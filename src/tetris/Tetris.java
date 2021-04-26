@@ -69,6 +69,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
     private boolean ableToMoveDown;
     private boolean isGameOver;
     private boolean isPaused;
+    private boolean isInFocus;
     private int lvlNum;
 
 
@@ -774,6 +775,7 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
         //initialize vars
         isGameOver = false;
         isPaused = false;
+        isInFocus = true;
         drop = 0;
         score = 0;
 
@@ -881,34 +883,40 @@ public class Tetris implements GameElement, MouseMotionListener, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode())
-        {
-            case KeyEvent.VK_SPACE:
-                rotate();
-                break;
+        if(isInFocus){
+            switch (e.getKeyCode())
+            {
+                case KeyEvent.VK_SPACE:
+                    rotate();
+                    break;
 
-            case KeyEvent.VK_LEFT:
-                moveLeft();
-                break;
+                case KeyEvent.VK_LEFT:
+                    moveLeft();
+                    break;
 
-            case KeyEvent.VK_RIGHT:
-                moveRight();
-                break;
+                case KeyEvent.VK_RIGHT:
+                    moveRight();
+                    break;
 
-            case KeyEvent.VK_DOWN:
-                dropAll();
-                score += 1;
-                break;
-            case KeyEvent.VK_B:
-                if(isPaused)
-                    c.setElement("MENU");
-                break;
-            case KeyEvent.VK_A:
-                if(isPaused)
-                    start();
-                break;
+                case KeyEvent.VK_DOWN:
+                    dropAll();
+                    score += 1;
+                    break;
+                case KeyEvent.VK_B:
+                    if(isPaused){
+                        isInFocus = false;
+                        c.setElement("MENU");
+                    }
 
+                    break;
+                case KeyEvent.VK_A:
+                    if(isPaused)
+                        start();
+                    break;
+
+            }
         }
+
     }
 
     @Override
