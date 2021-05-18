@@ -1,5 +1,8 @@
 # JavaGameArcade
 
+I worked with Gavin Tersteeg and Eric Schmitt. 
+Gavin created the engine, Eric made the Tetris game, and I coded the Pac Man portion of the project.
+
 ## A collection of the classic games PACMAN and TETRIS
 
 ### TETRIS
